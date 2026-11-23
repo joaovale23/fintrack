@@ -29,7 +29,8 @@ jobs:
         run: npm test -- --watch=false
       - name: Endereço da API
         # Variável do repositório (Settings → Variables → API_URL), preenchida depois que a API estiver no Render.
-        run: sed -i "s|apiUrl: ''|apiUrl: '${{ vars.API_URL }}'|" src/environments/environment.ts
+        run: |
+          sed -i "s|apiUrl: ''|apiUrl: '${{ vars.API_URL }}'|" src/environments/environment.ts
       - name: Build
         run: npx ng build --base-href /fintrack/
       # O GitHub Pages não conhece as rotas do Angular: o 404.html devolve o app, que abre a rota certa.
