@@ -1,0 +1,102 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="box">
+  <div class="preview" [style.--c]="preview().color">
+    <app-category-icon
+      [icon]="preview().icon ?? 'sell'"
+      [color]="preview().color ?? '#888'"
+      [size]="56"
+    />
+    <div>
+      <b>{{ preview().name || 'Nova categoria' }}</b>
+      <small
+        >{{ preview().type === 'INCOME' ? 'Entrada' : 'Saída'
+        }}{{ preview().type === 'EXPENSE' && limitPreview() ? ' · ' + limitPreview() : '' }}</small
+      >
+    </div>
+  </div>
+
+  <div class="segmented" role="radiogroup" aria-label="Tipo">
+    <button
+      type="button"
+      [class.active]="preview().type === 'EXPENSE'"
+      (click)="form.controls.type.setValue('EXPENSE')"
+    >
+      Saída
+    </button>
+    <button
+      type="button"
+      [class.active]="preview().type === 'INCOME'"
+      (click)="form.controls.type.setValue('INCOME')"
+    >
+      Entrada
+    </button>
+  </div>
+
+  <label class="field">
+    <span>Nome</span>
+    <input formControlName="name" maxlength="40" placeholder="Ex.: Mercado" cdkFocusInitial />
+  </label>
+  @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+    <p class="error">Informe o nome</p>
+  }
+
+  @if (preview().type === 'EXPENSE') {
+    <label class="field" animate.enter="rise">
+      <span>Meta de gastos por mês <em>(opcional)</em></span>
+      <input formControlName="monthlyLimit" inputmode="decimal" placeholder="R$ 0,00" />
+    </label>
+  }
+
+  <span class="eyebrow">Ícone</span>
+  <div class="icons" role="radiogroup" aria-label="Ícone">
+    @for (icon of icons; track icon) {
+      <button
+        type="button"
+        role="radio"
+        [class.active]="preview().icon === icon"
+        [attr.aria-checked]="preview().icon === icon"
+        [attr.aria-label]="icon"
+        (click)="form.controls.icon.setValue(icon)"
+      >
+        <span class="material-symbols-rounded" [class.filled]="preview().icon === icon">{{
+          icon
+        }}</span>
+      </button>
+    }
+  </div>
+
+  <span class="eyebrow">Cor</span>
+  <div class="colors" role="radiogroup" aria-label="Cor">
+    @for (color of palette; track color) {
+      <button
+        type="button"
+        role="radio"
+        [style.background]="color"
+        [class.active]="preview().color === color"
+        [attr.aria-checked]="preview().color === color"
+        [attr.aria-label]="'Cor ' + color"
+        (click)="form.controls.color.setValue(color)"
+      ></button>
+    }
+  </div>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  <footer>
+    @if (category) {
+      <button
+        type="button"
+        class="icon-button danger"
+        (click)="remove()"
+        aria-label="Apagar categoria"
+      >
+        <span class="material-symbols-rounded">delete</span>
+      </button>
+    }
+    <button type="button" class="btn ghost" mat-dialog-close>Cancelar</button>
+    <button type="submit" class="btn primary" [disabled]="saving()">
+      {{ saving() ? 'Salvando…' : 'Salvar' }}
+    </button>
+  </footer>
+</form>

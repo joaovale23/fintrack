@@ -1,0 +1,216 @@
+<section class="hero">
+  <div class="title">
+    <span class="eyebrow">{{ greeting() }}</span>
+    <h1 class="display">
+      {{ monthName() }}<span class="year">{{ year() }}</span>
+    </h1>
+    <div class="hero-actions">
+      <app-month-switcher [(month)]="month" />
+      <button class="retro" (click)="openRetro()" [disabled]="!data() || !data()!.expense">
+        <span class="material-symbols-rounded filled">play_circle</span> Retrospectiva
+      </button>
+    </div>
+  </div>
+
+  <div class="balance" [class.negative]="(data()?.balance ?? 0) < 0">
+    <svg class="deco" viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 150 C 80 150, 110 60, 200 70 S 320 160, 400 40" />
+      <path d="M0 175 C 90 170, 130 100, 210 105 S 330 185, 400 85" />
+    </svg>
+    <span class="label"
+      >{{ (data()?.balance ?? 0) < 0 ? 'Faltou em' : 'Sobrou em' }}
+      {{ monthName().toLowerCase() }}</span
+    >
+    @if (data(); as d) {
+      <strong class="num amount" [appCountUp]="d.balance"></strong>
+      <div
+        class="split"
+        [class.empty]="!d.income && !d.expense"
+        role="img"
+        [attr.aria-label]="'Entradas ' + brl(d.income) + ', saídas ' + brl(d.expense)"
+      >
+        <span class="in" [style.flex-basis.%]="incomeShare()"></span>
+        <span class="out"></span>
+      </div>
+      <div class="legs">
+        <span><i class="in"></i> Entradas <b class="num" [appCountUp]="d.income"></b></span>
+        <span><i class="out"></i> Saídas <b class="num" [appCountUp]="d.expense"></b></span>
+      </div>
+    } @else {
+      <span class="skeleton on-dark" style="height: 56px; width: 70%"></span>
+      <span class="skeleton on-dark" style="height: 10px; width: 100%; margin-top: 18px"></span>
+    }
+  </div>
+</section>
+
+@if (errorMessage(); as message) {
+  <div class="card error" role="alert" animate.enter="rise">
+    <span class="material-symbols-rounded">cloud_off</span>
+    <p>{{ message }}</p>
+    <button class="btn ghost" (click)="summary.reload()">Tentar de novo</button>
+  </div>
+}
+
+@if (insights().length) {
+  <!-- Desktop: grade de cartões. Celular: carrossel com rolagem lateral e encaixe (scroll-snap). -->
+  <ul class="insights" aria-label="Destaques do mês">
+    @for (i of insights(); track i.caption) {
+      <li [class]="i.tone" animate.enter="rise" [style.--i]="$index">
+        <!-- O ícone vira ilustração de fundo, grande e apagada, na cor do tom. -->
+        <span class="material-symbols-rounded filled art" aria-hidden="true">{{ i.icon }}</span>
+        <b class="value" [class.num]="i.value.includes('R$')">{{ i.value }}</b>
+        <span class="caption">{{ i.caption }}</span>
+      </li>
+    }
+  </ul>
+}
+
+<section class="card block flow">
+  <header>
+    <div>
+      <h2>Para onde foi o dinheiro</h2>
+      <p class="sub">Passe o mouse numa categoria para seguir o caminho dela.</p>
+    </div>
+    <button class="btn ghost" (click)="newTransaction()">
+      <span class="material-symbols-rounded">add</span> Lançar
+    </button>
+  </header>
+  @if (data(); as d) {
+    <app-flow-chart
+      [incomes]="d.incomesByCategory"
+      [expenses]="d.expensesByCategory"
+      [income]="d.income"
+      [expense]="d.expense"
+    >
+      <app-empty-state
+        art="flow"
+        title="Nada entrou nem saiu ainda"
+        text="Quando houver lançamentos neste mês, o caminho do dinheiro aparece aqui."
+      >
+        <button class="btn primary" (click)="newTransaction()">
+          <span class="material-symbols-rounded">add</span> Primeiro lançamento
+        </button>
+      </app-empty-state>
+    </app-flow-chart>
+  } @else {
+    <div class="skeleton" style="height: 300px"></div>
+  }
+</section>
+
+<div class="pace-row">
+  <section class="card block">
+    <header>
+      <h2>Ritmo do mês</h2>
+    </header>
+    @if (data(); as d) {
+      <app-pace-chart [daily]="d.daily" />
+    } @else {
+      <div class="skeleton" style="height: 240px"></div>
+    }
+  </section>
+
+  <section class="card block upcoming">
+    <header>
+      <h2>Próximas contas</h2>
+      <a routerLink="/recorrentes" class="link">Ver todas</a>
+    </header>
+    <ul>
+      @for (b of upcoming(); track b.id; let i = $index) {
+        <li animate.enter="rise" [style.--i]="i">
+          <app-category-icon [icon]="b.category.icon" [color]="b.category.color" [size]="38" />
+          <span class="what">
+            <b>{{ b.description }}</b>
+            <small
+              [class.soon]="until(b.nextDate!) === 'hoje' || until(b.nextDate!) === 'amanhã'"
+              >{{ until(b.nextDate!) }}</small
+            >
+          </span>
+          <b class="num" [class.in]="b.category.type === 'INCOME'"
+            >{{ b.category.type === 'INCOME' ? '+' : '−' }} {{ brl(b.amount) }}</b
+          >
+        </li>
+      } @empty {
+        <li class="empty-li">
+          <app-empty-state
+            art="calendar"
+            [compact]="true"
+            title="Nenhuma conta fixa"
+            text="Aluguel, internet, salário: cadastre uma vez e elas aparecem aqui antes de vencer."
+          >
+            <a class="btn ghost" routerLink="/recorrentes"
+              ><span class="material-symbols-rounded">add</span> Cadastrar</a
+            >
+          </app-empty-state>
+        </li>
+      }
+    </ul>
+  </section>
+</div>
+
+<div class="duo">
+  <section class="card block">
+    <header>
+      <h2>Metas do mês</h2>
+      <a routerLink="/categorias" class="link">Ajustar</a>
+    </header>
+    @if (data()) {
+      <ul class="goals">
+        @for (g of goals(); track g.id) {
+          <li animate.enter="rise" [style.--i]="$index">
+            <app-budget-ring [percent]="g.percent" [size]="64" />
+            <div class="goal-text">
+              <span class="goal-name"
+                ><app-category-icon [icon]="g.icon" [color]="g.color" [size]="22" />
+                {{ g.name }}</span
+              >
+              <span class="num"
+                >{{ brl(g.spent) }} <small>de {{ brl(g.limit) }}</small></span
+              >
+              @if (g.percent > 100) {
+                <small class="bad">Passou {{ brl(g.spent - g.limit) }}</small>
+              } @else {
+                <small class="muted">Faltam {{ brl(g.limit - g.spent) }}</small>
+              }
+            </div>
+          </li>
+        } @empty {
+          <li class="empty-li">
+            <app-empty-state
+              art="target"
+              [compact]="true"
+              title="Nenhuma meta ainda"
+              text="Defina um teto de gastos por mês para uma categoria e acompanhe aqui."
+            >
+              <a class="btn ghost" routerLink="/categorias">Definir uma meta</a>
+            </app-empty-state>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="skeleton" style="height: 220px"></div>
+    }
+  </section>
+
+  <section class="card block">
+    <header><h2>Calendário de gastos</h2></header>
+    @if (data(); as d) {
+      <app-spend-calendar [daily]="d.daily" />
+    } @else {
+      <div class="skeleton" style="height: 260px"></div>
+    }
+  </section>
+</div>
+
+<!-- O gráfico de evolução só é carregado quando chega perto da tela (deferrable view). -->
+@defer (on viewport; prefetch on idle) {
+  <section class="card block">
+    <header>
+      <h2>Últimos 6 meses</h2>
+    </header>
+    @if (data(); as d) {
+      <app-trend-chart [data]="d.trend" />
+    }
+  </section>
+} @placeholder {
+  <div class="skeleton" style="height: 300px"></div>
+}

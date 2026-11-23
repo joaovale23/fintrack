@@ -1,0 +1,127 @@
+@if (empty()) {
+  <ng-content />
+} @else if (narrow()) {
+  <div class="stack" role="img" aria-label="Divisão das entradas do mês">
+    @for (b of bars(); track b.key) {
+      <span [style.width.%]="b.pct" [style.background]="b.color" [style.--i]="$index"></span>
+    }
+  </div>
+  <ul class="legend">
+    @for (b of bars(); track b.key) {
+      <li animate.enter="rise" [style.--i]="$index">
+        <button type="button" (click)="open(b)" [disabled]="!b.categoryId">
+          <i [style.background]="b.color"></i>
+          <span class="name">{{ b.name }}</span>
+          <span class="pct">{{ b.pct | number: '1.0-0' }}%</span>
+          <b class="num">{{ brl(b.total) }}</b>
+        </button>
+      </li>
+    }
+  </ul>
+} @else {
+  <svg
+    [attr.viewBox]="'0 0 ' + W + ' ' + H"
+    role="img"
+    aria-label="Fluxo do dinheiro no mês: entradas à esquerda, saídas à direita"
+  >
+    <defs>
+      @for (r of rows(); track r.key) {
+        <linearGradient
+          [attr.id]="'flow-' + r.key"
+          gradientUnits="userSpaceOnUse"
+          [attr.x1]="POOL_X + POOL_W"
+          [attr.x2]="NODE_X"
+          y1="0"
+          y2="0"
+        >
+          <stop offset="0%" [attr.stop-color]="r.color" stop-opacity="0.12" />
+          <stop offset="100%" [attr.stop-color]="r.color" stop-opacity="0.55" />
+        </linearGradient>
+      }
+    </defs>
+
+    <!-- Coluna de entradas -->
+    @for (s of sources(); track s.key; let first = $first; let last = $last) {
+      <path class="source" [attr.d]="s.d" [style.fill]="s.color" />
+      <text class="src-name" [attr.x]="POOL_X - 14" [attr.y]="s.y + s.h / 2 - 2" text-anchor="end">
+        {{ s.name }}
+      </text>
+      <text
+        class="src-value num"
+        [attr.x]="POOL_X - 14"
+        [attr.y]="s.y + s.h / 2 + 17"
+        text-anchor="end"
+      >
+        {{ brl(s.total) }}
+      </text>
+    }
+
+    <g class="rows" [class.focused]="hovered() !== null">
+      @for (r of rows(); track r.key; let i = $index) {
+        <g
+          class="row"
+          [class.on]="hovered() === r.key"
+          [class.link]="!!r.categoryId"
+          [style.--i]="i"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="r.name + ': ' + brl(r.total) + ', ' + r.percent + '% do que entrou'"
+          (mouseenter)="hovered.set(r.key)"
+          (mouseleave)="hovered.set(null)"
+          (focus)="hovered.set(r.key)"
+          (blur)="hovered.set(null)"
+          (click)="open(r)"
+          (keydown.enter)="open(r)"
+        >
+          <!-- Área invisível que cobre do fim da faixa até o fim do rótulo: fácil de apontar mesmo nas linhas finas. -->
+          <rect
+            class="hit"
+            [attr.x]="NODE_X - 40"
+            [attr.y]="r.labelY - 15"
+            [attr.width]="W - NODE_X + 40"
+            height="30"
+          />
+          <path class="ribbon" [attr.d]="r.d" [attr.fill]="'url(#flow-' + r.key + ')'" />
+          <path class="node" [attr.d]="r.node" [style.fill]="r.color" />
+          @if (r.labelY !== r.y + r.h / 2) {
+            <path
+              class="leader"
+              [attr.d]="
+                'M' +
+                (NODE_X + NODE_W + 4) +
+                ',' +
+                (r.y + r.h / 2) +
+                ' L' +
+                (NODE_X + NODE_W + 14) +
+                ',' +
+                r.labelY
+              "
+            />
+          }
+          <text class="name" [attr.x]="NODE_X + NODE_W + 18" [attr.y]="r.labelY + 5">
+            {{ r.name }}
+            <tspan class="value num" dx="6">{{ brl(r.total) }}</tspan>
+          </text>
+          <text class="pct" [attr.x]="W - 4" [attr.y]="r.labelY + 5" text-anchor="end">
+            {{ r.percent }}%
+          </text>
+        </g>
+      }
+    </g>
+  </svg>
+
+  <p class="readout" aria-live="polite">
+    @if (active(); as a) {
+      <i [style.background]="a.color"></i>
+      <b>{{ a.name }}</b> {{ brl(a.total) }} · {{ a.percent }}% do que entrou
+      @if (a.members) {
+        <span class="members">({{ a.members.join(' · ') }})</span>
+      } @else if (a.categoryId) {
+        <span class="hint">clique para ver os lançamentos</span>
+      }
+    } @else {
+      Entrou <b class="num in">{{ brl(income()) }}</b> e saiu
+      <b class="num out">{{ brl(expense()) }}</b>
+    }
+  </p>
+}

@@ -1,0 +1,142 @@
+<aside class="sidebar">
+  <a routerLink="/" class="brand" aria-label="fintrack, ir para o painel"><app-logo /></a>
+
+  <button class="btn primary new" (click)="newTransaction()">
+    <span class="material-symbols-rounded">add</span> Novo lançamento <span class="kbd">N</span>
+  </button>
+
+  <button class="search-trigger" (click)="openPalette()">
+    <span class="material-symbols-rounded">search</span> Buscar
+    <span class="kbd">{{ isMac ? '⌘' : 'Ctrl' }} K</span>
+  </button>
+
+  <nav aria-label="Principal">
+    @for (link of links; track link.path) {
+      <a
+        [routerLink]="link.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+        #rla="routerLinkActive"
+      >
+        <span class="material-symbols-rounded" [class.filled]="rla.isActive">{{ link.icon }}</span>
+        {{ link.label }}
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-foot">
+    @if (user()?.demo) {
+      <p class="demo-note"><i></i> Conta de visitante · some em 24 h</p>
+    }
+    <div class="me">
+      <button
+        class="avatar-edit"
+        (click)="pickAvatar()"
+        matTooltip="Trocar foto de perfil"
+        aria-label="Trocar foto de perfil"
+      >
+        <app-avatar [avatar]="user()?.avatar" [name]="user()?.name ?? ''" [size]="40" />
+        <span class="material-symbols-rounded pen">edit</span>
+      </button>
+      <span class="who">
+        <b>{{ user()?.name }}</b>
+        <small>{{ user()?.demo ? 'Dados de exemplo' : user()?.email }}</small>
+      </span>
+    </div>
+    <div class="tools">
+      <button
+        class="icon-button"
+        (click)="privacy.toggle()"
+        [class.on]="privacy.on()"
+        [matTooltip]="(privacy.on() ? 'Mostrar valores' : 'Esconder valores') + ' (H)'"
+        [attr.aria-pressed]="privacy.on()"
+        aria-label="Modo discreto"
+      >
+        <span class="material-symbols-rounded">{{
+          privacy.on() ? 'visibility_off' : 'visibility'
+        }}</span>
+      </button>
+      <button
+        class="icon-button"
+        (click)="toggleTheme($event)"
+        [matTooltip]="theme.theme() === 'dark' ? 'Tema claro' : 'Tema escuro'"
+        [attr.aria-label]="theme.theme() === 'dark' ? 'Usar tema claro' : 'Usar tema escuro'"
+      >
+        <span class="material-symbols-rounded">{{
+          theme.theme() === 'dark' ? 'light_mode' : 'dark_mode'
+        }}</span>
+      </button>
+      <button class="icon-button" (click)="logout()" matTooltip="Sair" aria-label="Sair">
+        <span class="material-symbols-rounded">logout</span>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<header class="topbar">
+  <a routerLink="/" aria-label="fintrack, ir para o painel"><app-logo [size]="22" /></a>
+  <span class="spacer"></span>
+  <button
+    class="icon-button"
+    (click)="privacy.toggle()"
+    [class.on]="privacy.on()"
+    [attr.aria-pressed]="privacy.on()"
+    aria-label="Modo discreto"
+  >
+    <span class="material-symbols-rounded">{{
+      privacy.on() ? 'visibility_off' : 'visibility'
+    }}</span>
+  </button>
+  <button
+    class="icon-button"
+    (click)="toggleTheme($event)"
+    [attr.aria-label]="theme.theme() === 'dark' ? 'Usar tema claro' : 'Usar tema escuro'"
+  >
+    <span class="material-symbols-rounded">{{
+      theme.theme() === 'dark' ? 'light_mode' : 'dark_mode'
+    }}</span>
+  </button>
+  <button class="avatar-button" [matMenuTriggerFor]="menu" aria-label="Conta">
+    <app-avatar [avatar]="user()?.avatar" [name]="user()?.name ?? ''" [size]="34" />
+  </button>
+  <mat-menu #menu="matMenu" xPosition="before">
+    <div class="menu-head">
+      <b>{{ user()?.name }}</b>
+      <small>{{ user()?.demo ? 'Conta de visitante (some em 24 h)' : user()?.email }}</small>
+    </div>
+    <button mat-menu-item (click)="pickAvatar()">
+      <span class="material-symbols-rounded menu-icon">face</span> Trocar foto de perfil
+    </button>
+    <button mat-menu-item (click)="logout()">
+      <span class="material-symbols-rounded menu-icon">logout</span> Sair
+    </button>
+  </mat-menu>
+</header>
+
+<main class="content">
+  <router-outlet />
+</main>
+
+<button
+  class="fab"
+  [class.compact]="compactFab()"
+  (click)="newTransaction()"
+  aria-label="Novo lançamento"
+>
+  <span class="material-symbols-rounded">add</span>
+  <span class="fab-label">Lançar</span>
+</button>
+
+<nav class="tabbar" aria-label="Principal">
+  @for (link of mobileLinks; track link.path) {
+    <a
+      [routerLink]="link.path"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+      #rla2="routerLinkActive"
+    >
+      <span class="material-symbols-rounded" [class.filled]="rla2.isActive">{{ link.icon }}</span>
+      <small>{{ link.label }}</small>
+    </a>
+  }
+</nav>

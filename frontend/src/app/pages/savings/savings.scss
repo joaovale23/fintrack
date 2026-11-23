@@ -1,0 +1,224 @@
+/* Itens da grade podem encolher: sem isso, a fileira de chips alarga a página no celular. */
+:host > *,
+.filters > * {
+  min-width: 0;
+}
+
+:host {
+  display: grid;
+  gap: 18px;
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  h1 {
+    font-size: clamp(34px, 5vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+}
+
+.total {
+  margin: 0;
+  font-size: 16px;
+  color: var(--ink-2);
+
+  b {
+    font-size: 22px;
+    color: var(--ink);
+    margin: 0 4px;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+  gap: 16px;
+}
+
+.goal {
+  position: relative;
+  display: flex;
+  gap: 22px;
+  padding: 22px 22px 22px 18px;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -60px;
+    bottom: -80px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: var(--c);
+    opacity: 0.07;
+  }
+
+  app-jar {
+    --jar-w: 118px;
+    align-self: center;
+  }
+
+  &.done {
+    border-color: color-mix(in srgb, var(--c) 50%, var(--line));
+  }
+}
+
+.info {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .icon {
+    color: var(--c);
+  }
+
+  h2 {
+    flex: 1;
+    font-size: 20px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .edit {
+    width: 34px;
+    height: 34px;
+    margin: -4px -6px 0 0;
+  }
+}
+
+.amounts {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--ink-2);
+
+  b {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-2);
+
+  span {
+    font-size: 18px;
+  }
+
+  b {
+    color: var(--ink);
+  }
+}
+
+.done-text {
+  color: var(--c);
+  font-weight: 700;
+}
+
+.moves {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 8px 0 0;
+  border-top: 1px dashed var(--line);
+  display: grid;
+  gap: 3px;
+  font-size: 13px;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-2);
+  }
+
+  b {
+    color: var(--income);
+    font-weight: 600;
+  }
+
+  b.out {
+    color: var(--expense);
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+
+  .btn {
+    height: 40px;
+    padding: 0 16px;
+  }
+
+  .save {
+    background: var(--c);
+    color: #fff;
+  }
+
+  span {
+    font-size: 18px;
+  }
+}
+
+.empty {
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 40px 16px;
+  text-align: center;
+
+  h2 {
+    font-size: 24px;
+    margin-top: 10px;
+  }
+
+  p {
+    max-width: 42ch;
+    color: var(--ink-2);
+    margin: 0 0 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .goal {
+    gap: 14px;
+    padding: 18px 16px 18px 12px;
+
+    app-jar {
+      --jar-w: 92px;
+      align-self: flex-start;
+    }
+  }
+
+  .amounts b {
+    font-size: 23px;
+  }
+}

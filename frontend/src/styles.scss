@@ -1,0 +1,564 @@
+@use '@angular/material' as mat;
+
+/* =============================================================
+   Identidade do fintrack
+   Papel quente, tinta escura, verde-pinho para entradas e
+   tomate para saídas. O Material é recolorido pelos tokens --mat-sys-*.
+   ============================================================= */
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$green-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: (
+        plain-family: 'Instrument Sans, system-ui, sans-serif',
+        brand-family: 'Bricolage Grotesque, Instrument Sans, sans-serif',
+      ),
+      density: 0,
+    )
+  );
+}
+
+:root,
+html[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f4f1ea;
+  --surface: #fffdf8;
+  --surface-2: #f0ebe1;
+  --surface-3: #e7e0d2;
+  --ink: #1b1a17;
+  --ink-2: #66625a;
+  --ink-3: #9a958a;
+  --line: #e4ddcf;
+  --brand: #0e6b4f;
+  --brand-ink: #ffffff;
+  --brand-soft: #d9efe4;
+  --income: #128a5c;
+  --expense: #e0533c;
+  --goal: #e9a52a;
+  /* Botão de ação principal no celular: amarelo mais fosco que o --goal. */
+  --accent: #e3b45a;
+  --accent-ink: #2a2214;
+  /* Superfícies "invertidas" (barra inferior, cartão do saldo): escuras no tema claro. */
+  --contrast-bg: #1b1a17;
+  --contrast-fg: #f4f1ea;
+  --shadow: 0 1px 0 rgb(27 26 23 / 4%), 0 12px 32px -16px rgb(27 26 23 / 22%);
+  --grain-opacity: 0.05;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #11130f;
+  --surface: #181b16;
+  --surface-2: #20241d;
+  --surface-3: #2a2f26;
+  --ink: #f1efe8;
+  --ink-2: #aaa79d;
+  --ink-3: #75736b;
+  --line: #2c3128;
+  --brand: #5fd3a4;
+  --brand-ink: #06281c;
+  --brand-soft: #193b2e;
+  --income: #4fd39b;
+  --expense: #ff7b63;
+  --goal: #ffc65c;
+  --accent: #d6ae62;
+  --accent-ink: #231c0f;
+  /* No escuro, as superfícies invertidas ficam num bege apagado, não em branco puro. */
+  --contrast-bg: #c9c4b7;
+  --contrast-fg: #191b16;
+  --shadow: 0 1px 0 rgb(0 0 0 / 30%), 0 16px 40px -20px rgb(0 0 0 / 70%);
+  --grain-opacity: 0.07;
+}
+
+/* Material lendo a nossa paleta */
+html {
+  --mat-sys-primary: var(--brand);
+  --mat-sys-on-primary: var(--brand-ink);
+  --mat-sys-primary-container: var(--brand-soft);
+  --mat-sys-on-primary-container: var(--ink);
+  --mat-sys-secondary-container: var(--brand-soft);
+  --mat-sys-on-secondary-container: var(--ink);
+  --mat-sys-surface: var(--surface);
+  --mat-sys-surface-container-lowest: var(--surface);
+  --mat-sys-surface-container-low: var(--surface);
+  --mat-sys-surface-container: var(--surface);
+  --mat-sys-surface-container-high: var(--surface);
+  --mat-sys-surface-container-highest: var(--surface-2);
+  --mat-sys-surface-variant: var(--surface-2);
+  --mat-sys-on-surface: var(--ink);
+  --mat-sys-on-surface-variant: var(--ink-2);
+  --mat-sys-outline: var(--ink-3);
+  --mat-sys-outline-variant: var(--line);
+  --mat-sys-error: var(--expense);
+  --mat-sys-inverse-surface: var(--ink);
+  --mat-sys-inverse-on-surface: var(--bg);
+  --mat-sys-inverse-primary: var(--brand-soft);
+  --mat-sys-corner-extra-large: 28px;
+  --mat-sys-corner-large: 20px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Instrument Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease;
+}
+
+/* Textura de papel: dá corpo ao fundo liso. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+h1,
+h2,
+h3,
+.display {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: var(--brand);
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 450,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.material-symbols-rounded.filled {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+::selection {
+  background: var(--brand-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ---------- Blocos reutilizáveis ---------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 6px;
+  border: 1px solid currentColor;
+  font:
+    600 11px/1 'Instrument Sans',
+    sans-serif;
+  opacity: 0.6;
+}
+
+.skeleton {
+  border-radius: 14px;
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 0%,
+    var(--surface-3) 50%,
+    var(--surface-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 4px;
+  gap: 2px;
+  border-radius: 999px;
+  background: var(--surface-2);
+
+  button {
+    border: 0;
+    background: transparent;
+    color: var(--ink-2);
+    font:
+      600 13px 'Instrument Sans',
+      sans-serif;
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      color 0.2s;
+
+    &.active {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+    }
+  }
+}
+
+.chip-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px 0 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font:
+    500 13px 'Instrument Sans',
+    sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.15s;
+
+  &:hover {
+    border-color: var(--ink-3);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &.active {
+    border-color: var(--c, var(--brand));
+    background: color-mix(in srgb, var(--c, var(--brand)) 14%, var(--surface));
+  }
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+
+  &:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  border: 0;
+  font:
+    600 14px 'Instrument Sans',
+    sans-serif;
+  cursor: pointer;
+  transition:
+    transform 0.15s,
+    filter 0.2s,
+    background 0.2s;
+  text-decoration: none;
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  &.primary {
+    background: var(--brand);
+    color: var(--brand-ink);
+  }
+
+  &.primary:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+
+  &.ghost {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+
+  &.ghost:hover {
+    background: var(--surface-3);
+  }
+
+  &.block {
+    width: 100%;
+  }
+}
+
+/* ---------- Modo discreto ---------- */
+
+/* Com o modo discreto ligado, todo valor em dinheiro fica borrado (atalho H). */
+.num,
+.money {
+  transition: filter 0.3s ease;
+}
+
+html.privacy .num,
+html.privacy .money {
+  filter: blur(7px);
+  user-select: none;
+}
+
+/* ---------- Movimento ---------- */
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes fade-out-left {
+  to {
+    opacity: 0;
+    transform: translateX(-24px);
+    height: 0;
+    padding-block: 0;
+    margin-block: 0;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* Classes usadas por animate.enter / animate.leave nos templates. */
+.rise {
+  animation: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.pop {
+  animation: pop 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.leave-left {
+  animation: fade-out-left 0.3s ease forwards;
+  overflow: hidden;
+}
+
+/* Transição entre páginas (View Transitions API, ligada no roteador). */
+::view-transition-old(root) {
+  animation: 160ms ease both vt-out;
+}
+
+::view-transition-new(root) {
+  animation: 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both vt-in;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Na troca de tema quem anima é o ThemeService (círculo a partir do clique). */
+html.theme-switching::view-transition-old(root),
+html.theme-switching::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after,
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Ajustes nos componentes do Material ---------- */
+
+.mat-mdc-snack-bar-container.toast {
+  --mat-snack-bar-container-shape: 16px;
+  --mat-snack-bar-container-color: var(--ink);
+  --mat-snack-bar-supporting-text-color: var(--bg);
+  --mat-snack-bar-button-color: var(--goal);
+}
+
+/* Formulário de lançamento como painel lateral (desktop) ou folha de baixo (celular). */
+.sheet-panel {
+  --mat-dialog-container-shape: 28px 0 0 28px;
+  --mat-dialog-container-max-width: 100vw;
+
+  .mat-mdc-dialog-surface {
+    animation: slide-in-right 0.38s cubic-bezier(0.2, 0.8, 0.2, 1);
+    background: var(--surface);
+  }
+}
+
+.sheet-panel.bottom {
+  --mat-dialog-container-shape: 28px 28px 0 0;
+
+  .mat-mdc-dialog-surface {
+    animation-name: slide-in-up;
+  }
+}
+
+.story-panel {
+  --mat-dialog-container-shape: 32px;
+
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 640px) {
+  .story-panel {
+    --mat-dialog-container-shape: 0;
+  }
+}
+
+.palette-panel {
+  --mat-dialog-container-shape: 24px;
+
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
+  }
+}
+
+/* O conteúdo do modal rola por dentro; o rodapé com os botões fica preso no fim da área visível. */
+.mat-mdc-dialog-container .mat-mdc-dialog-surface {
+  max-height: inherit;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.mat-mdc-dialog-surface form > footer,
+.mat-mdc-dialog-surface .box > footer {
+  position: sticky;
+  bottom: -24px;
+  z-index: 2;
+  margin-bottom: -24px;
+  padding-top: 12px;
+  padding-bottom: 24px;
+  background: var(--surface);
+}
+
+.cdk-overlay-backdrop.soft-backdrop {
+  background: rgb(17 19 15 / 38%);
+  backdrop-filter: blur(3px);
+}
+
+.mat-mdc-menu-panel {
+  --mat-menu-container-shape: 16px;
+}
+
+.mat-mdc-menu-panel.month-menu {
+  max-width: none;
+  --mat-menu-container-shape: 22px;
+
+  .mat-mdc-menu-item {
+    justify-content: center;
+    min-height: 40px;
+    text-align: center;
+  }
+}
+
+.mat-mdc-tooltip {
+  --mat-tooltip-container-color: var(--ink);
+  --mat-tooltip-supporting-text-color: var(--bg);
+}

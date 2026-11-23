@@ -1,0 +1,177 @@
+<header class="head">
+  <div>
+    <span class="eyebrow">Histórico</span>
+    <h1>Lançamentos</h1>
+  </div>
+  <div class="head-actions">
+    <a class="btn ghost" routerLink="/recorrentes"
+      ><span class="material-symbols-rounded">event_repeat</span> Recorrentes</a
+    >
+    <button class="btn ghost" (click)="importStatement()">
+      <span class="material-symbols-rounded">upload_file</span> Importar
+    </button>
+    <app-month-switcher [(month)]="month" />
+  </div>
+</header>
+
+<div class="totals">
+  @if (summary.hasValue()) {
+    <div class="total in" animate.enter="rise">
+      <span class="material-symbols-rounded">north_east</span>
+      <span
+        ><small>Entradas</small><b class="num">{{ brl(summary.value().income) }}</b></span
+      >
+    </div>
+    <div class="total out" animate.enter="rise" style="--i: 1">
+      <span class="material-symbols-rounded">south_east</span>
+      <span
+        ><small>Saídas</small><b class="num">{{ brl(summary.value().expense) }}</b></span
+      >
+    </div>
+    <div class="total bal" animate.enter="rise" style="--i: 2">
+      <span class="material-symbols-rounded">account_balance_wallet</span>
+      <span
+        ><small>Saldo</small><b class="num">{{ brl(summary.value().balance) }}</b></span
+      >
+    </div>
+  } @else {
+    @for (s of [1, 2, 3]; track s) {
+      <div class="skeleton" style="height: 64px"></div>
+    }
+  }
+</div>
+
+<app-quick-add />
+
+<section class="filters" aria-label="Filtros">
+  <div class="segmented" role="radiogroup" aria-label="Tipo">
+    <button type="button" [class.active]="type() === null" (click)="type.set(null)">Tudo</button>
+    <button type="button" [class.active]="type() === 'INCOME'" (click)="type.set('INCOME')">
+      Entradas
+    </button>
+    <button type="button" [class.active]="type() === 'EXPENSE'" (click)="type.set('EXPENSE')">
+      Saídas
+    </button>
+  </div>
+  <label class="search">
+    <span class="material-symbols-rounded">search</span>
+    <input [formControl]="search" placeholder="Buscar" aria-label="Buscar na descrição" />
+    @if (search.value) {
+      <button
+        type="button"
+        class="icon-button"
+        (click)="search.setValue('')"
+        aria-label="Limpar busca"
+      >
+        <span class="material-symbols-rounded">close</span>
+      </button>
+    }
+  </label>
+  <div class="chips">
+    @for (c of visibleCategories(); track c.id) {
+      <button
+        type="button"
+        class="chip-button"
+        [class.active]="categoryId() === c.id"
+        [style.--c]="c.color"
+        (click)="toggleCategory(c.id)"
+      >
+        <app-category-icon [icon]="c.icon" [color]="c.color" [size]="24" /> {{ c.name }}
+      </button>
+    }
+  </div>
+</section>
+
+@if (error(); as message) {
+  <p class="card state" role="alert">{{ message }}</p>
+}
+
+<section class="timeline" aria-live="polite">
+  @for (g of groups(); track g.date) {
+    <div class="day" animate.enter="rise">
+      <h3>
+        <span>{{ g.label }}</span>
+        <span class="num" [class.pos]="g.net > 0"
+          >{{ g.net > 0 ? '+' : g.net < 0 ? '−' : '' }} {{ brl(abs(g.net)) }}</span
+        >
+      </h3>
+      <ul>
+        @for (t of g.items; track t.id; let i = $index) {
+          <li animate.enter="rise" animate.leave="leave-left" [style.--i]="stagger(i)">
+            <button
+              type="button"
+              class="row"
+              (click)="edit(t)"
+              [attr.aria-label]="'Editar ' + t.description"
+            >
+              <app-category-icon [icon]="t.category.icon" [color]="t.category.color" [size]="44" />
+              <span class="what">
+                <b>{{ t.description }}</b>
+                <small
+                  >{{ t.category.name }}
+                  @if (t.recurring) {
+                    <span class="fixed"
+                      ><span class="material-symbols-rounded">event_repeat</span> fixa</span
+                    >
+                  }
+                </small>
+              </span>
+              <span class="num amount" [class.in]="t.category.type === 'INCOME'">
+                {{ t.category.type === 'INCOME' ? '+' : '−' }} {{ brl(t.amount) }}
+              </span>
+            </button>
+            <button
+              type="button"
+              class="icon-button del"
+              (click)="remove(t, $event)"
+              matTooltip="Apagar"
+              [attr.aria-label]="'Apagar ' + t.description"
+            >
+              <span class="material-symbols-rounded">delete</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  } @empty {
+    @if (!loading()) {
+      <div class="empty" animate.enter="pop">
+        <svg viewBox="0 0 120 100" aria-hidden="true">
+          <rect x="30" y="14" width="60" height="76" rx="10" class="paper" />
+          <rect x="22" y="22" width="60" height="76" rx="10" class="paper front" />
+          <path d="M34 44h36M34 56h28M34 68h20" class="lines" />
+          <circle cx="92" cy="22" r="12" class="spark" />
+        </svg>
+        <h2>{{ filtered() ? 'Nada com esses filtros' : 'Nenhum lançamento neste mês' }}</h2>
+        <p>
+          {{
+            filtered()
+              ? 'Tente outro filtro ou limpe a busca.'
+              : 'Use o lançamento rápido acima ou o botão abaixo.'
+          }}
+        </p>
+        @if (filtered()) {
+          <button class="btn ghost" (click)="clearFilters()">Limpar filtros</button>
+        } @else {
+          <button class="btn primary" (click)="create()">
+            <span class="material-symbols-rounded">add</span> Novo lançamento
+          </button>
+        }
+      </div>
+    }
+  }
+
+  @if (loading()) {
+    @for (s of [1, 2, 3]; track s) {
+      <div class="skeleton row-skeleton"></div>
+    }
+  }
+
+  @if (hasMore()) {
+    <div appInfiniteScroll (reached)="loadMore()" class="sentinel"></div>
+  } @else if (items().length > 0) {
+    <p class="end">
+      {{ total() }} {{ total() === 1 ? 'lançamento' : 'lançamentos' }} · fim da lista
+    </p>
+  }
+</section>

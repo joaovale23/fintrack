@@ -1,0 +1,147 @@
+<button
+  class="icon-button theme"
+  (click)="theme.toggle({ x: $event.clientX, y: $event.clientY })"
+  [attr.aria-label]="theme.theme() === 'dark' ? 'Usar tema claro' : 'Usar tema escuro'"
+>
+  <span class="material-symbols-rounded">{{
+    theme.theme() === 'dark' ? 'light_mode' : 'dark_mode'
+  }}</span>
+</button>
+
+<section class="story">
+  <app-logo [size]="30" />
+  <h1 class="display">
+    Para onde foi o seu
+    <span class="mark"
+      >dinheiro?
+      <svg viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M4 16 C 70 4, 150 4, 296 12" />
+      </svg>
+    </span>
+  </h1>
+  <p class="lead">
+    Lance em segundos, acompanhe metas por categoria e veja o caminho de cada real no fluxo do mês.
+  </p>
+
+  <button class="btn demo" (click)="demo()" [disabled]="loading() !== null">
+    <span class="material-symbols-rounded">{{
+      loading() === 'demo' ? 'hourglass_top' : 'visibility'
+    }}</span>
+    {{ loading() === 'demo' ? 'Preparando seus dados…' : 'Entrar como visitante' }}
+  </button>
+  <p class="hint">Cria uma conta temporária com seis meses de dados de exemplo. Sem cadastro.</p>
+
+  <div class="scene" aria-hidden="true">
+    <div class="float f1" style="--depth: 18">
+      <span class="label">Sobrou em novembro</span>
+      <strong class="num" [appCountUp]="sample()" [duration]="1600"></strong>
+      <div class="bar"><i></i></div>
+    </div>
+    <div class="float f2" style="--depth: 30">
+      <div class="tx">
+        <app-category-icon icon="restaurant" color="#f08a24" [size]="34" /> Mercado
+        <b class="num out">− R$ 230,50</b>
+      </div>
+      <div class="tx">
+        <app-category-icon icon="payments" color="#1f8a5b" [size]="34" /> Salário
+        <b class="num in">+ R$ 5.200,00</b>
+      </div>
+      <div class="tx">
+        <app-category-icon icon="directions_car" color="#2d8fd5" [size]="34" /> Uber
+        <b class="num out">− R$ 18,90</b>
+      </div>
+    </div>
+    <div class="float f3" style="--depth: 42">
+      <app-budget-ring [percent]="78" [size]="58" />
+      <span><b>Alimentação</b><small>R$ 330 para a meta</small></span>
+    </div>
+    <div class="float f4" style="--depth: 24">
+      <span class="material-symbols-rounded filled">bolt</span> mercado 230,50 ontem
+    </div>
+  </div>
+</section>
+
+<section class="auth">
+  <div class="card panel">
+    <div class="segmented" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        [class.active]="mode() === 'login'"
+        [attr.aria-selected]="mode() === 'login'"
+        (click)="switchMode('login')"
+      >
+        Entrar
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [class.active]="mode() === 'register'"
+        [attr.aria-selected]="mode() === 'register'"
+        (click)="switchMode('register')"
+      >
+        Criar conta
+      </button>
+    </div>
+
+    @if (mode() === 'login') {
+      <form [formGroup]="loginForm" (ngSubmit)="login()" animate.enter="rise">
+        <h2>Bem-vindo de volta</h2>
+        <label class="field">
+          <span>E-mail</span>
+          <input type="email" formControlName="email" autocomplete="email" />
+          @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
+            <small class="error">{{
+              loginForm.controls.email.hasError('email') ? 'E-mail inválido' : 'Informe o e-mail'
+            }}</small>
+          }
+        </label>
+        <label class="field">
+          <span>Senha</span>
+          <input type="password" formControlName="password" autocomplete="current-password" />
+          @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+            <small class="error">Informe a senha</small>
+          }
+        </label>
+        <button class="btn primary block" type="submit" [disabled]="loading() !== null">
+          {{ loading() === 'login' ? 'Entrando…' : 'Entrar' }}
+        </button>
+      </form>
+    } @else {
+      <form [formGroup]="registerForm" (ngSubmit)="register()" animate.enter="rise">
+        <h2>Comece do zero</h2>
+        <label class="field">
+          <span>Nome</span>
+          <input formControlName="name" autocomplete="name" />
+          @if (registerForm.controls.name.touched && registerForm.controls.name.invalid) {
+            <small class="error">Informe seu nome</small>
+          }
+        </label>
+        <label class="field">
+          <span>E-mail</span>
+          <input type="email" formControlName="email" autocomplete="email" />
+          @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
+            <small class="error">{{
+              registerForm.controls.email.hasError('email') ? 'E-mail inválido' : 'Informe o e-mail'
+            }}</small>
+          }
+        </label>
+        <label class="field">
+          <span>Senha <em>(mínimo 8 caracteres)</em></span>
+          <input type="password" formControlName="password" autocomplete="new-password" />
+          @if (registerForm.controls.password.touched && registerForm.controls.password.invalid) {
+            <small class="error">A senha precisa ter de 8 a 72 caracteres</small>
+          }
+        </label>
+        <button class="btn primary block" type="submit" [disabled]="loading() !== null">
+          {{ loading() === 'register' ? 'Criando…' : 'Criar conta' }}
+        </button>
+      </form>
+    }
+
+    @if (error(); as message) {
+      <p class="error-box" role="alert" animate.enter="pop">{{ message }}</p>
+    }
+  </div>
+  <p class="foot">Angular 22 · Spring Boot 4 · feito por João Vitor Vale</p>
+</section>

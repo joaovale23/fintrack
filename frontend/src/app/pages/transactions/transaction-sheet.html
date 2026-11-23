@@ -1,0 +1,169 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="sheet" [attr.data-type]="type()">
+  <header>
+    <h2>{{ editing ? 'Editar lançamento' : 'Novo lançamento' }}</h2>
+    <button type="button" class="icon-button" (click)="close()" aria-label="Fechar">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </header>
+
+  <div class="segmented type" role="radiogroup" aria-label="Tipo">
+    <button
+      type="button"
+      role="radio"
+      [class.active]="type() === 'EXPENSE'"
+      [attr.aria-checked]="type() === 'EXPENSE'"
+      (click)="setType('EXPENSE')"
+    >
+      <span class="material-symbols-rounded">south_east</span> Saída
+    </button>
+    <button
+      type="button"
+      role="radio"
+      [class.active]="type() === 'INCOME'"
+      [attr.aria-checked]="type() === 'INCOME'"
+      (click)="setType('INCOME')"
+    >
+      <span class="material-symbols-rounded">north_east</span> Entrada
+    </button>
+  </div>
+
+  <label class="amount">
+    <span class="sr-only">Valor</span>
+    <span class="currency">R$</span>
+    <input
+      formControlName="amount"
+      inputmode="decimal"
+      placeholder="0,00"
+      autocomplete="off"
+      (blur)="formatAmountField()"
+      cdkFocusInitial
+    />
+  </label>
+  @if (form.controls.amount.touched && form.controls.amount.invalid) {
+    <p class="field-error" role="alert">
+      @if (form.controls.amount.hasError('required')) {
+        Informe o valor
+      } @else if (form.controls.amount.hasError('format')) {
+        Use um valor como 230,50
+      } @else if (form.controls.amount.getError('server'); as msg) {
+        {{ msg }}
+      } @else {
+        O valor precisa ser maior que zero
+      }
+    </p>
+  }
+
+  <mat-form-field class="full">
+    <mat-label>Descrição</mat-label>
+    <input
+      matInput
+      formControlName="description"
+      maxlength="120"
+      placeholder="Ex.: Mercado do mês"
+    />
+    @if (form.controls.description.hasError('required')) {
+      <mat-error>Informe a descrição</mat-error>
+    }
+    @if (form.controls.description.getError('server'); as msg) {
+      <mat-error>{{ msg }}</mat-error>
+    }
+  </mat-form-field>
+
+  <span class="eyebrow">Categoria</span>
+  <div class="categories" role="radiogroup" aria-label="Categoria">
+    @for (c of options(); track c.id) {
+      <button
+        type="button"
+        class="cat"
+        role="radio"
+        [class.active]="selected()?.id === c.id"
+        [attr.aria-checked]="selected()?.id === c.id"
+        [style.--c]="c.color"
+        (click)="form.controls.categoryId.setValue(c.id)"
+        animate.enter="pop"
+      >
+        <app-category-icon [icon]="c.icon" [color]="c.color" [size]="46" />
+        <span>{{ c.name }}</span>
+      </button>
+    }
+  </div>
+  @if (form.controls.categoryId.touched && form.controls.categoryId.invalid) {
+    <p class="field-error" role="alert">Escolha uma categoria</p>
+  }
+
+  <span class="eyebrow">Data</span>
+  <div class="dates">
+    <button
+      type="button"
+      class="chip-button"
+      [class.active]="dateIso() === todayIso"
+      (click)="setDate(todayIso)"
+    >
+      Hoje
+    </button>
+    <button
+      type="button"
+      class="chip-button"
+      [class.active]="dateIso() === yesterdayIso"
+      (click)="setDate(yesterdayIso)"
+    >
+      Ontem
+    </button>
+    <mat-form-field class="date-field">
+      <mat-label>Outra data</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="date" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker" />
+      <mat-datepicker #picker />
+    </mat-form-field>
+  </div>
+
+  @if (!editing) {
+    <button
+      type="button"
+      class="repeat"
+      role="switch"
+      [attr.aria-checked]="repeat()"
+      (click)="repeat.set(!repeat())"
+    >
+      <span class="material-symbols-rounded">event_repeat</span>
+      <span class="text">
+        <b>Repetir todo mês</b>
+        <small>{{
+          repeat()
+            ? 'Vira conta recorrente: lançada sozinha todo dia ' +
+              form.controls.date.value.getDate()
+            : 'Para aluguel, assinaturas, salário…'
+        }}</small>
+      </span>
+      <i class="knob"><i></i></i>
+    </button>
+  }
+
+  @if (error(); as message) {
+    <p class="field-error" role="alert">{{ message }}</p>
+  }
+
+  <footer>
+    @if (editing) {
+      <button
+        type="button"
+        class="icon-button danger"
+        (click)="remove()"
+        aria-label="Apagar lançamento"
+      >
+        <span class="material-symbols-rounded">delete</span>
+      </button>
+    }
+    <button type="submit" class="btn primary block save" [disabled]="saving()">
+      {{
+        saving()
+          ? 'Salvando…'
+          : editing
+            ? 'Salvar alterações'
+            : type() === 'INCOME'
+              ? 'Lançar entrada'
+              : 'Lançar saída'
+      }}
+    </button>
+  </footer>
+</form>

@@ -1,0 +1,305 @@
+:host > * {
+  min-width: 0;
+}
+
+:host {
+  display: grid;
+  gap: 20px;
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  h1 {
+    font-size: clamp(34px, 5vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+}
+
+.overview {
+  padding: 22px 24px 18px;
+  display: grid;
+  gap: 22px;
+}
+
+.totals {
+  display: flex;
+  gap: 36px;
+  flex-wrap: wrap;
+
+  p {
+    margin: 0;
+    display: grid;
+  }
+
+  .label {
+    color: var(--ink-2);
+    font-size: 13px;
+  }
+
+  b {
+    font-size: 30px;
+    font-weight: 800;
+  }
+
+  .out {
+    color: var(--expense);
+  }
+
+  .in {
+    color: var(--income);
+  }
+}
+
+.strip {
+  position: relative;
+  height: 96px;
+  margin: 0 15px;
+}
+
+.track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 26px;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--line), var(--surface-3), var(--line));
+}
+
+.today {
+  position: absolute;
+  bottom: 18px;
+  top: 0;
+  width: 2px;
+  background: var(--goal);
+  transform: translateX(-1px);
+
+  span {
+    position: absolute;
+    top: -2px;
+    left: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--goal);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+.marker {
+  position: absolute;
+  bottom: calc(36px + var(--stack) * 26px);
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  animation: drop-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 70ms);
+  transition: transform 0.2s;
+
+  app-category-icon {
+    box-shadow: 0 0 0 3px var(--surface);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 1.5px;
+    height: calc(10px + var(--stack) * 26px);
+    background: var(--line);
+  }
+
+  &.past {
+    opacity: 0.55;
+  }
+
+  &:hover,
+  &.lit {
+    transform: translateX(-50%) scale(1.18);
+    opacity: 1;
+    z-index: 2;
+  }
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    translate: 0 -16px;
+  }
+}
+
+.ticks {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  border-radius: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+
+  li {
+    display: flex;
+    align-items: center;
+    border-radius: 18px;
+    transition:
+      background 0.2s,
+      opacity 0.2s;
+
+    &:hover,
+    &.lit {
+      background: var(--surface-2);
+    }
+
+    &.paused {
+      opacity: 0.55;
+    }
+  }
+}
+
+.row {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.what {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+
+  b {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    color: var(--ink-2);
+  }
+}
+
+.right {
+  display: grid;
+  justify-items: end;
+
+  b {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  b.in {
+    color: var(--income);
+  }
+
+  .next {
+    color: var(--ink-2);
+  }
+
+  .next.soon {
+    color: var(--goal);
+    font-weight: 700;
+  }
+}
+
+/* Interruptor próprio: pílula com bolinha que desliza. */
+.switch {
+  flex: none;
+  width: 44px;
+  height: 26px;
+  margin: 0 12px 0 4px;
+  padding: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-3);
+  cursor: pointer;
+  transition: background 0.25s;
+
+  i {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  &[aria-checked='true'] {
+    background: var(--brand);
+
+    i {
+      transform: translateX(18px);
+    }
+  }
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 40px 16px;
+  text-align: center;
+
+  > span {
+    font-size: 48px;
+    color: var(--goal);
+  }
+
+  p {
+    max-width: 44ch;
+    color: var(--ink-2);
+    margin: 0 0 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .overview {
+    padding: 18px;
+  }
+
+  .totals b {
+    font-size: 24px;
+  }
+
+  .marker app-category-icon {
+    --s: 24px !important;
+  }
+
+  .switch {
+    margin-right: 6px;
+  }
+}

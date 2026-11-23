@@ -1,0 +1,127 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="box" [attr.data-type]="value().type">
+  <header>
+    <h2>{{ bill ? 'Editar conta recorrente' : 'Nova conta recorrente' }}</h2>
+    <button type="button" class="icon-button" mat-dialog-close aria-label="Fechar">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </header>
+
+  <div class="segmented" role="radiogroup" aria-label="Tipo">
+    <button type="button" [class.active]="value().type === 'EXPENSE'" (click)="setType('EXPENSE')">
+      Conta a pagar
+    </button>
+    <button type="button" [class.active]="value().type === 'INCOME'" (click)="setType('INCOME')">
+      Entrada fixa
+    </button>
+  </div>
+
+  <label class="amount">
+    <span class="currency">R$</span>
+    <input
+      formControlName="amount"
+      inputmode="decimal"
+      placeholder="0,00"
+      autocomplete="off"
+      aria-label="Valor"
+      cdkFocusInitial
+    />
+  </label>
+  @if (form.controls.amount.touched && form.controls.amount.invalid) {
+    <p class="error">Informe um valor como 99,90</p>
+  }
+
+  <label class="field">
+    <span>Descrição</span>
+    <input
+      formControlName="description"
+      maxlength="120"
+      placeholder="Ex.: Aluguel, Internet, Salário"
+    />
+  </label>
+
+  <span class="eyebrow">Categoria</span>
+  <div class="categories" role="radiogroup" aria-label="Categoria">
+    @for (c of options(); track c.id) {
+      <button
+        type="button"
+        class="cat"
+        [class.active]="value().categoryId === c.id"
+        [style.--c]="c.color"
+        (click)="form.controls.categoryId.setValue(c.id)"
+      >
+        <app-category-icon [icon]="c.icon" [color]="c.color" [size]="34" />
+        <span>{{ c.name }}</span>
+      </button>
+    }
+  </div>
+  @if (form.controls.categoryId.touched && form.controls.categoryId.invalid) {
+    <p class="error">Escolha a categoria</p>
+  }
+
+  <span class="eyebrow">Todo dia</span>
+  <div class="days" role="radiogroup" aria-label="Dia do mês">
+    @for (d of days; track d) {
+      <button
+        type="button"
+        role="radio"
+        [class.active]="value().dayOfMonth === d"
+        [attr.aria-checked]="value().dayOfMonth === d"
+        [class.today]="d === today"
+        (click)="form.controls.dayOfMonth.setValue(d)"
+      >
+        {{ d }}
+      </button>
+    }
+  </div>
+  @if ((value().dayOfMonth ?? 0) > 28) {
+    <p class="hint">Em meses mais curtos, ela cai no último dia do mês.</p>
+  }
+
+  @if (!bill) {
+    <span class="eyebrow">Começa em</span>
+    <div class="starts">
+      <button
+        type="button"
+        class="chip-button"
+        [class.active]="value().startMonth === thisMonth"
+        (click)="form.controls.startMonth.setValue(thisMonth)"
+      >
+        Este mês
+      </button>
+      <button
+        type="button"
+        class="chip-button"
+        [class.active]="value().startMonth === nextMonth"
+        (click)="form.controls.startMonth.setValue(nextMonth)"
+      >
+        Próximo mês
+      </button>
+    </div>
+    @if (launchesNow()) {
+      <p class="hint now">
+        <span class="material-symbols-rounded">bolt</span> O dia {{ value().dayOfMonth }} já passou:
+        a cobrança deste mês é lançada agora.
+      </p>
+    }
+  }
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  <footer>
+    @if (bill) {
+      <button
+        type="button"
+        class="icon-button danger"
+        (click)="remove()"
+        aria-label="Parar de repetir"
+      >
+        <span class="material-symbols-rounded">delete</span>
+      </button>
+    }
+    <button type="submit" class="btn primary save" [disabled]="saving()">
+      {{ saving() ? 'Salvando…' : 'Salvar' }}
+    </button>
+  </footer>
+</form>

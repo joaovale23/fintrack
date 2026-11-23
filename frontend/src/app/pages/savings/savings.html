@@ -1,0 +1,108 @@
+<header class="head">
+  <div>
+    <span class="eyebrow">Objetivos</span>
+    <h1>Cofrinhos</h1>
+  </div>
+  <button class="btn primary" (click)="openGoal()">
+    <span class="material-symbols-rounded">add</span> Novo cofrinho
+  </button>
+</header>
+
+@if (savings.goals().length) {
+  <p class="total" animate.enter="rise">
+    Guardado no total <b class="num" [appCountUp]="savings.totalSaved()"></b> em
+    {{ savings.goals().length }} {{ savings.goals().length === 1 ? 'cofrinho' : 'cofrinhos' }}
+  </p>
+}
+
+<div class="grid">
+  @for (g of savings.goals(); track g.id; let i = $index) {
+    <article
+      class="card goal"
+      #card
+      [style.--c]="g.color"
+      [class.done]="g.percent >= 100"
+      animate.enter="rise"
+      [style.--i]="i"
+    >
+      <app-jar [percent]="g.percent" [color]="g.color" [dropKey]="drops()[g.id] ?? null" />
+
+      <div class="info">
+        <div class="title">
+          <span class="material-symbols-rounded filled icon">{{ g.icon }}</span>
+          <h2>{{ g.name }}</h2>
+          <button
+            class="icon-button edit"
+            (click)="openGoal(g)"
+            matTooltip="Editar"
+            [attr.aria-label]="'Editar ' + g.name"
+          >
+            <span class="material-symbols-rounded">edit</span>
+          </button>
+        </div>
+
+        <p class="amounts">
+          <b class="num">{{ brl(g.saved) }}</b>
+          <span
+            >de <span class="num">{{ brl(g.target) }}</span></span
+          >
+        </p>
+
+        @if (g.percent >= 100) {
+          <p class="status done-text">
+            <span class="material-symbols-rounded filled">verified</span> Objetivo alcançado
+          </p>
+        } @else if (g.monthlyNeeded) {
+          <p class="status">
+            <span class="material-symbols-rounded">event</span>
+            Guarde <b class="num">{{ brl(g.monthlyNeeded) }}</b> por mês até {{ deadlineLabel(g) }}
+          </p>
+        } @else {
+          <p class="status">
+            <span class="material-symbols-rounded">all_inclusive</span> Faltam
+            <b class="num">{{ brl(g.target - g.saved) }}</b>
+          </p>
+        }
+
+        @if (g.recentMoves.length) {
+          <ul class="moves">
+            @for (m of g.recentMoves.slice(0, 3); track m.id) {
+              <li>
+                <span>{{ day(m.date) }}</span>
+                <b class="num" [class.out]="m.amount < 0"
+                  >{{ m.amount < 0 ? '−' : '+' }} {{ brl(abs(m.amount)) }}</b
+                >
+              </li>
+            }
+          </ul>
+        }
+
+        <div class="actions">
+          <button class="btn primary save" (click)="move(g, 'DEPOSIT', i)">
+            <span class="material-symbols-rounded">south</span> Guardar
+          </button>
+          <button class="btn ghost" (click)="move(g, 'WITHDRAW', i)" [disabled]="g.saved <= 0">
+            <span class="material-symbols-rounded">north</span> Resgatar
+          </button>
+        </div>
+      </div>
+    </article>
+  } @empty {
+    @if (!savings.loading()) {
+      <div class="empty" animate.enter="pop">
+        <app-jar [percent]="8" color="#e9a52a" style="--jar-w: 110px" />
+        <h2>Comece um cofrinho</h2>
+        <p>
+          Viagem, reserva de emergência, um notebook novo: separe o dinheiro e veja o pote encher.
+        </p>
+        <button class="btn primary" (click)="openGoal()">
+          <span class="material-symbols-rounded">add</span> Criar o primeiro
+        </button>
+      </div>
+    } @else {
+      @for (s of [1, 2]; track s) {
+        <div class="skeleton" style="height: 260px; border-radius: 24px"></div>
+      }
+    }
+  }
+</div>

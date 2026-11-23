@@ -1,0 +1,245 @@
+.sheet {
+  --tone: var(--expense);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 100%;
+  padding: 22px 24px calc(22px + env(safe-area-inset-bottom));
+}
+
+.sheet[data-type='INCOME'] {
+  --tone: var(--income);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+}
+
+.type {
+  align-self: flex-start;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  button.active {
+    color: var(--tone);
+  }
+
+  span {
+    font-size: 18px;
+  }
+}
+
+.amount {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0 10px;
+  border-bottom: 2px solid var(--line);
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: var(--tone);
+  }
+
+  .currency {
+    font:
+      600 24px 'Bricolage Grotesque',
+      sans-serif;
+    color: var(--ink-3);
+  }
+
+  input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--tone);
+    font:
+      700 52px/1.1 'Bricolage Grotesque',
+      sans-serif;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+
+    &::placeholder {
+      color: var(--surface-3);
+    }
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.full {
+  width: 100%;
+}
+
+.categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 6px 4px;
+}
+
+/* Categorias como fichas redondas: a escolhida ganha um anel na cor dela. */
+.cat {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font:
+    600 12px 'Instrument Sans',
+    sans-serif;
+  cursor: pointer;
+
+  app-category-icon {
+    transition:
+      transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.2s;
+  }
+
+  &:hover app-category-icon {
+    transform: translateY(-3px);
+  }
+
+  &.active {
+    color: var(--ink);
+
+    app-category-icon {
+      box-shadow:
+        0 0 0 3px var(--surface),
+        0 0 0 5px var(--c);
+      transform: scale(1.06);
+    }
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+}
+
+.dates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  .date-field {
+    flex: 1;
+    min-width: 180px;
+  }
+}
+
+.repeat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  > .material-symbols-rounded {
+    color: var(--ink-2);
+  }
+
+  .text {
+    display: grid;
+    flex: 1;
+    line-height: 1.25;
+
+    small {
+      color: var(--ink-2);
+    }
+  }
+
+  .knob {
+    flex: none;
+    width: 40px;
+    height: 24px;
+    padding: 3px;
+    border-radius: 999px;
+    background: var(--surface-3);
+    transition: background 0.25s;
+
+    i {
+      display: block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--surface);
+      box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+  }
+
+  &[aria-checked='true'] {
+    border-color: var(--goal);
+
+    > .material-symbols-rounded {
+      color: var(--goal);
+    }
+
+    .knob {
+      background: var(--goal);
+
+      i {
+        transform: translateX(16px);
+      }
+    }
+  }
+}
+
+.field-error {
+  margin: -6px 0 0;
+  color: var(--expense);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+footer {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+  padding-top: 8px;
+
+  .save {
+    height: 52px;
+    background: var(--tone);
+    color: var(--brand-ink);
+    font-size: 15px;
+  }
+
+  .danger {
+    width: 52px;
+    height: 52px;
+    color: var(--expense);
+    background: color-mix(in srgb, var(--expense) 12%, var(--surface));
+    flex: none;
+  }
+}

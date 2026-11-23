@@ -1,0 +1,177 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.story {
+  --bgc: var(--brand);
+  --fg: var(--brand-ink);
+  position: relative;
+  height: 100%;
+  min-height: min(760px, 92dvh);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 26px 40px;
+  background: var(--bgc);
+  color: var(--fg);
+  user-select: none;
+  cursor: pointer;
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease;
+  overflow: hidden;
+}
+
+.story[data-tone='ink'] {
+  --bgc: var(--contrast-bg);
+  --fg: var(--contrast-fg);
+}
+
+.story[data-tone='goal'] {
+  --bgc: var(--goal);
+  --fg: #1b1a17;
+}
+
+.story[data-tone='expense'] {
+  --bgc: var(--expense);
+  --fg: #fff;
+}
+
+.story[data-tone='paper'] {
+  --bgc: var(--surface);
+  --fg: var(--ink);
+}
+
+.story[data-tone='category'] {
+  --bgc: color-mix(in srgb, var(--c) 22%, var(--surface));
+  --fg: var(--ink);
+}
+
+/* Formas soltas de fundo, para cada tela não ser só cor chapada. */
+.story::before,
+.story::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0.12;
+  animation: drift 9s ease-in-out infinite alternate;
+}
+
+.story::before {
+  width: 340px;
+  height: 340px;
+  right: -140px;
+  top: 90px;
+}
+
+.story::after {
+  width: 220px;
+  height: 220px;
+  left: -90px;
+  bottom: 60px;
+  animation-delay: -3s;
+}
+
+@keyframes drift {
+  to {
+    transform: translate(-30px, 24px) scale(1.08);
+  }
+}
+
+.bars {
+  display: flex;
+  gap: 4px;
+  margin-right: 44px;
+
+  span {
+    flex: 1;
+    height: 3px;
+    border-radius: 3px;
+    background: color-mix(in srgb, currentColor 25%, transparent);
+    overflow: hidden;
+  }
+
+  i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: currentColor;
+
+    &.full {
+      width: 100%;
+    }
+
+    &.run {
+      animation: fill linear forwards;
+    }
+
+    &.paused {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes fill {
+  to {
+    width: 100%;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  color: inherit;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.content {
+  position: relative;
+  margin: auto 0;
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  animation: rise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  .eyebrow {
+    color: inherit;
+    opacity: 0.75;
+  }
+
+  h2 {
+    font-size: clamp(54px, 15vw, 76px);
+    line-height: 0.95;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    overflow-wrap: anywhere;
+  }
+
+  h2.long {
+    font-size: clamp(38px, 10vw, 52px);
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 18px;
+    max-width: 26ch;
+    opacity: 0.85;
+  }
+}
+
+.glyph {
+  font-size: 64px;
+  margin-bottom: 10px;
+  animation: pop 0.6s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.token {
+  margin-bottom: 10px;
+  animation: pop 0.6s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}

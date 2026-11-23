@@ -1,0 +1,66 @@
+<header class="head">
+  <div>
+    <span class="eyebrow">Organização</span>
+    <h1>Categorias</h1>
+  </div>
+  <button class="btn primary" (click)="open()">
+    <span class="material-symbols-rounded">add</span> Nova categoria
+  </button>
+</header>
+
+@for (section of sections(); track section.title) {
+  <section>
+    <div class="section-head">
+      <h2>
+        {{ section.title }} <span>{{ section.items.length }}</span>
+      </h2>
+      <button type="button" class="add-link" (click)="open(undefined, section.type)">
+        <span class="material-symbols-rounded">add</span> Adicionar
+      </button>
+    </div>
+    <div class="grid">
+      @for (c of section.items; track c.id; let i = $index) {
+        <button
+          type="button"
+          class="tile"
+          [style.--c]="c.color"
+          (click)="open(c)"
+          animate.enter="rise"
+          [style.--i]="i"
+          [attr.aria-label]="'Editar ' + c.name"
+        >
+          <div class="top">
+            <app-category-icon [icon]="c.icon" [color]="c.color" [size]="48" />
+            @if (c.monthlyLimit) {
+              <app-budget-ring [percent]="percent(c)" [size]="52" />
+            }
+          </div>
+          <b>{{ c.name }}</b>
+          <span class="num"
+            >{{ brl(total(c)) }} <small>em {{ monthName }}</small></span
+          >
+          @if (c.monthlyLimit) {
+            <small class="limit">Meta: {{ brl(c.monthlyLimit) }}</small>
+          }
+          <span class="material-symbols-rounded edit">edit</span>
+        </button>
+      } @empty {
+        <app-empty-state
+          class="span"
+          art="tags"
+          [compact]="true"
+          [title]="
+            section.type === 'INCOME'
+              ? 'Nenhuma categoria de entrada'
+              : 'Nenhuma categoria de saída'
+          "
+          text="Categorias organizam os lançamentos e alimentam o painel."
+        >
+          <button class="btn ghost" (click)="open(undefined, section.type)">
+            <span class="material-symbols-rounded">add</span> Criar
+          </button>
+        </app-empty-state>
+      }
+    </div>
+  </section>
+}

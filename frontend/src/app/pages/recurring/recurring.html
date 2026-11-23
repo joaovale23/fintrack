@@ -1,0 +1,117 @@
+<header class="head">
+  <div>
+    <span class="eyebrow">Contas fixas</span>
+    <h1>Recorrentes</h1>
+  </div>
+  <button class="btn primary" (click)="open()">
+    <span class="material-symbols-rounded">add</span> Nova conta
+  </button>
+</header>
+
+<section class="card overview">
+  <div class="totals">
+    <p>
+      <span class="label">Saem todo mês</span>
+      <b class="num out" [appCountUp]="service.monthlyOut()"></b>
+    </p>
+    <p>
+      <span class="label">Entram todo mês</span>
+      <b class="num in" [appCountUp]="service.monthlyIn()"></b>
+    </p>
+  </div>
+
+  <!-- Linha do mês: onde cada conta cai, com o dia de hoje marcado. -->
+  <div class="strip" role="img" aria-label="Dias do mês em que as contas são lançadas">
+    <div class="track"></div>
+    <div class="today" [style.left.%]="todayLeft()"><span>hoje</span></div>
+    @for (m of markers(); track m.bill.id; let i = $index) {
+      <button
+        type="button"
+        class="marker"
+        [style.left.%]="m.left"
+        [style.--stack]="m.stack"
+        [style.--i]="i"
+        [class.lit]="hovered() === m.bill.id"
+        [class.past]="m.bill.dayOfMonth < today"
+        (mouseenter)="hovered.set(m.bill.id)"
+        (mouseleave)="hovered.set(null)"
+        (click)="open(m.bill)"
+        [matTooltip]="
+          m.bill.description + ' · dia ' + m.bill.dayOfMonth + ' · ' + brl(m.bill.amount)
+        "
+        [attr.aria-label]="m.bill.description + ', dia ' + m.bill.dayOfMonth"
+      >
+        <app-category-icon
+          [icon]="m.bill.category.icon"
+          [color]="m.bill.category.color"
+          [size]="30"
+        />
+      </button>
+    }
+    <div class="ticks" aria-hidden="true">
+      <span>1</span><span>10</span><span>20</span><span>{{ daysInMonth }}</span>
+    </div>
+  </div>
+</section>
+
+@for (section of sections(); track section.title) {
+  @if (section.items.length) {
+    <section>
+      <h2>{{ section.title }}</h2>
+      <ul class="list">
+        @for (b of section.items; track b.id; let i = $index) {
+          <li
+            animate.enter="rise"
+            [style.--i]="i"
+            [class.paused]="!b.active"
+            [class.lit]="hovered() === b.id"
+            (mouseenter)="hovered.set(b.id)"
+            (mouseleave)="hovered.set(null)"
+          >
+            <button
+              type="button"
+              class="row"
+              (click)="open(b)"
+              [attr.aria-label]="'Editar ' + b.description"
+            >
+              <app-category-icon [icon]="b.category.icon" [color]="b.category.color" [size]="44" />
+              <span class="what">
+                <b>{{ b.description }}</b>
+                <small>Todo dia {{ b.dayOfMonth }} · {{ b.category.name }}</small>
+              </span>
+              <span class="right">
+                <b class="num" [class.in]="b.category.type === 'INCOME'">{{ brl(b.amount) }}</b>
+                <small class="next" [class.soon]="next(b) === 'hoje' || next(b) === 'amanhã'">{{
+                  next(b)
+                }}</small>
+              </span>
+            </button>
+            <button
+              type="button"
+              class="switch"
+              role="switch"
+              [attr.aria-checked]="b.active"
+              (click)="toggle(b, $event)"
+              [matTooltip]="b.active ? 'Pausar' : 'Retomar'"
+              [attr.aria-label]="(b.active ? 'Pausar ' : 'Retomar ') + b.description"
+            >
+              <i></i>
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+}
+
+@if (!service.loading() && service.bills().length === 0) {
+  <app-empty-state
+    art="calendar"
+    title="Nenhuma conta recorrente"
+    text="Aluguel, internet, assinaturas, salário: cadastre uma vez e o fintrack lança sozinho todo mês, no dia certo."
+  >
+    <button class="btn primary" (click)="open()">
+      <span class="material-symbols-rounded">add</span> Cadastrar a primeira
+    </button>
+  </app-empty-state>
+}

@@ -1,0 +1,394 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  width: min(860px, 96vw);
+  max-height: 90dvh;
+}
+
+header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  h2 {
+    font-size: 26px;
+    margin-top: 2px;
+  }
+}
+
+.drop {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 34px 20px;
+  border: 2px dashed var(--line);
+  border-radius: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s;
+
+  svg {
+    width: 120px;
+    margin-bottom: 6px;
+  }
+
+  .paper {
+    fill: var(--surface-2);
+    stroke: var(--line);
+    stroke-width: 2;
+  }
+
+  .lines {
+    stroke: var(--ink-3);
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+
+  .badge {
+    fill: var(--brand);
+  }
+
+  .arrow {
+    fill: none;
+    stroke: var(--brand-ink);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  small {
+    color: var(--ink-2);
+  }
+
+  &:hover,
+  &.over {
+    border-color: var(--brand);
+    background: color-mix(in srgb, var(--brand) 6%, transparent);
+  }
+
+  &.over {
+    transform: scale(1.01);
+  }
+
+  &.busy svg {
+    animation: bob 1.2s ease-in-out infinite;
+  }
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.or {
+  margin: 0;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.sample {
+  align-self: center;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink-2);
+  font-size: 14px;
+
+  .pill {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--contrast-bg);
+    color: var(--contrast-fg);
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .dup {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--goal);
+
+    span {
+      font-size: 16px;
+    }
+  }
+
+  .link {
+    margin-left: auto;
+    border: 0;
+    background: none;
+    color: var(--brand);
+    font:
+      600 14px 'Instrument Sans',
+      sans-serif;
+    cursor: pointer;
+  }
+}
+
+.fill {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--goal) 16%, var(--surface));
+
+  > .material-symbols-rounded {
+    color: var(--goal);
+  }
+}
+
+select {
+  height: 34px;
+  max-width: 100%;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font:
+    500 13px 'Instrument Sans',
+    sans-serif;
+  cursor: pointer;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  flex: 1;
+  min-height: 160px;
+
+  li {
+    display: grid;
+    grid-template-columns: auto 58px minmax(0, 1fr) minmax(150px, 190px) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 14px;
+    transition:
+      opacity 0.2s,
+      background 0.2s;
+
+    &:hover {
+      background: var(--surface-2);
+    }
+
+    &.off {
+      opacity: 0.45;
+    }
+
+    &.need .cat select {
+      border-color: var(--goal);
+    }
+  }
+
+  .date {
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  .desc {
+    display: grid;
+    min-width: 0;
+
+    b {
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    small {
+      color: var(--goal);
+    }
+  }
+
+  .cat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+
+    select {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .unknown {
+    width: 26px;
+    text-align: center;
+    color: var(--ink-3);
+    font-size: 20px;
+  }
+
+  .amount {
+    font-weight: 700;
+    white-space: nowrap;
+    text-align: right;
+    min-width: 96px;
+  }
+
+  .amount.in {
+    color: var(--income);
+  }
+}
+
+/* Caixa de seleção redonda, no lugar da quadrada do navegador. */
+.check {
+  position: relative;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  i {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--ink-3);
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+
+  input:checked + i {
+    border-color: var(--brand);
+    background: var(--brand)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12l4 4 8-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / 16px no-repeat;
+  }
+
+  input:focus-visible + i {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .net {
+    margin-left: auto;
+    color: var(--ink-2);
+    font-size: 14px;
+  }
+}
+
+.done {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 30px 0 10px;
+  text-align: center;
+
+  svg {
+    width: 96px;
+  }
+
+  .ring {
+    fill: color-mix(in srgb, var(--brand) 14%, transparent);
+    stroke: var(--brand);
+    stroke-width: 4;
+  }
+
+  .tick {
+    fill: none;
+    stroke: var(--brand);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 50;
+    animation: tick 0.6s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  h3 {
+    font:
+      800 26px 'Bricolage Grotesque',
+      sans-serif;
+    margin: 6px 0 0;
+  }
+
+  p {
+    color: var(--ink-2);
+    margin: 0 0 10px;
+  }
+}
+
+@keyframes tick {
+  from {
+    stroke-dashoffset: 50;
+  }
+}
+
+.error {
+  margin: 0;
+  color: var(--expense);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .box {
+    padding: 18px;
+  }
+
+  .rows li {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'check desc amount'
+      'check cat cat';
+    row-gap: 6px;
+
+    .check {
+      grid-area: check;
+    }
+
+    .date {
+      display: none;
+    }
+
+    .desc {
+      grid-area: desc;
+    }
+
+    .cat {
+      grid-area: cat;
+    }
+
+    .amount {
+      grid-area: amount;
+      min-width: 0;
+    }
+  }
+
+  footer .net {
+    display: none;
+  }
+
+  footer .btn.primary {
+    margin-left: auto;
+  }
+}

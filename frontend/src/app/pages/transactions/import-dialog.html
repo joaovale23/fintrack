@@ -1,0 +1,180 @@
+<div class="box" [attr.data-step]="step()">
+  <header>
+    <div>
+      <span class="eyebrow">Importar extrato</span>
+      <h2>
+        @switch (step()) {
+          @case ('review') {
+            Confira antes de lançar
+          }
+          @case ('saving') {
+            Lançando…
+          }
+          @case ('done') {
+            Pronto!
+          }
+          @default {
+            De onde vêm os lançamentos?
+          }
+        }
+      </h2>
+    </div>
+    <button class="icon-button" (click)="close()" aria-label="Fechar">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </header>
+
+  @if (step() === 'pick' || step() === 'reading') {
+    <label
+      class="drop"
+      [class.over]="dragging()"
+      [class.busy]="step() === 'reading'"
+      (dragover)="$event.preventDefault(); dragging.set(true)"
+      (dragleave)="dragging.set(false)"
+      (drop)="onDrop($event)"
+    >
+      <input #file type="file" accept=".csv,.ofx,.txt" (change)="onPick(file)" hidden />
+      <svg viewBox="0 0 120 90" aria-hidden="true">
+        <rect x="26" y="8" width="56" height="70" rx="8" class="paper" />
+        <path d="M38 28h32M38 40h26M38 52h30" class="lines" />
+        <circle cx="86" cy="62" r="16" class="badge" />
+        <path d="M86 54v16M79 63l7 7 7-7" class="arrow" />
+      </svg>
+      @if (step() === 'reading') {
+        <b>Lendo {{ fileName() }}…</b>
+      } @else {
+        <b>Solte o arquivo aqui ou clique para escolher</b>
+        <small>CSV ou OFX, exportado pelo app ou site do seu banco · até 2 MB</small>
+      }
+    </label>
+    <p class="or">ou</p>
+    <button class="btn ghost sample" (click)="trySample()" [disabled]="step() === 'reading'">
+      <span class="material-symbols-rounded">science</span> Testar com um extrato de exemplo
+    </button>
+  }
+
+  @if (step() === 'review' || step() === 'saving') {
+    <div class="summary">
+      <span class="pill">{{ format() }}</span>
+      <span>{{ rows().length }} linhas lidas</span>
+      @if (duplicates()) {
+        <span class="dup"
+          ><span class="material-symbols-rounded">content_copy</span> {{ duplicates() }} já lançados
+          (desmarcados)</span
+        >
+      }
+      <button class="link" (click)="toggleAll()">
+        {{ selected().length === rows().length ? 'Desmarcar todos' : 'Marcar todos' }}
+      </button>
+    </div>
+
+    @if (missing()) {
+      <div class="fill" animate.enter="rise">
+        <span class="material-symbols-rounded">help</span>
+        <span>{{ missing() }} sem categoria. Aplicar a todos:</span>
+        <select
+          (change)="fillMissing($any($event.target).value); $any($event.target).value = ''"
+          aria-label="Categoria para os lançamentos sem categoria"
+        >
+          <option value="">Escolher…</option>
+          <optgroup label="Saídas">
+            @for (c of store.expenses(); track c.id) {
+              <option [value]="c.id">{{ c.name }}</option>
+            }
+          </optgroup>
+          <optgroup label="Entradas">
+            @for (c of store.incomes(); track c.id) {
+              <option [value]="c.id">{{ c.name }}</option>
+            }
+          </optgroup>
+        </select>
+      </div>
+    }
+
+    <ul class="rows">
+      @for (r of rows(); track r.key) {
+        <li
+          [class.off]="!r.selected"
+          [class.dup]="r.duplicate"
+          [class.need]="r.selected && !r.categoryId"
+        >
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="r.selected"
+              (change)="toggle(r.key)"
+              [attr.aria-label]="'Importar ' + r.description"
+            />
+            <i></i>
+          </label>
+          <span class="date">{{ shortDate(r.date) }}</span>
+          <span class="desc">
+            <b>{{ r.description }}</b>
+            @if (r.duplicate) {
+              <small>já existe um igual</small>
+            }
+          </span>
+          <span class="cat">
+            @if (categoryOf(r); as c) {
+              <app-category-icon [icon]="c.icon" [color]="c.color" [size]="26" />
+            } @else {
+              <span class="unknown material-symbols-rounded">help</span>
+            }
+            <select
+              [value]="r.categoryId"
+              (change)="setCategory(r.key, $any($event.target).value)"
+              [attr.aria-label]="'Categoria de ' + r.description"
+            >
+              <option value="">Categoria…</option>
+              @for (c of options(r); track c.id) {
+                <option [value]="c.id" [selected]="c.id === r.categoryId">{{ c.name }}</option>
+              }
+            </select>
+          </span>
+          <b class="num amount" [class.in]="r.amount >= 0"
+            >{{ r.amount >= 0 ? '+' : '−' }} {{ brl(r.amount < 0 ? -r.amount : r.amount) }}</b
+          >
+        </li>
+      }
+    </ul>
+
+    @if (error(); as message) {
+      <p class="error" role="alert">{{ message }}</p>
+    }
+
+    <footer>
+      <button class="btn ghost" (click)="back()" [disabled]="step() === 'saving'">
+        Outro arquivo
+      </button>
+      <span class="net num"
+        >Saldo do lote: {{ total() < 0 ? '−' : ''
+        }}{{ brl(total() < 0 ? -total() : total()) }}</span
+      >
+      <button
+        class="btn primary"
+        (click)="confirm()"
+        [disabled]="!selected().length || missing() > 0 || step() === 'saving'"
+      >
+        {{ step() === 'saving' ? 'Lançando…' : 'Lançar ' + selected().length }}
+      </button>
+    </footer>
+  }
+
+  @if (step() === 'done') {
+    <div class="done" animate.enter="pop">
+      <svg viewBox="0 0 80 80" aria-hidden="true">
+        <circle cx="40" cy="40" r="34" class="ring" />
+        <path d="M25 41l10 10 21-22" class="tick" />
+      </svg>
+      <h3>
+        {{ created() }} {{ created() === 1 ? 'lançamento importado' : 'lançamentos importados' }}
+      </h3>
+      <p>Eles já aparecem no painel e na lista.</p>
+      <button class="btn primary" (click)="close()">Ver lançamentos</button>
+    </div>
+  }
+
+  @if (error() && step() === 'pick') {
+    <p class="error" role="alert" animate.enter="pop">{{ error() }}</p>
+  }
+</div>

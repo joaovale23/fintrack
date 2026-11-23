@@ -1,0 +1,112 @@
+:host {
+  display: block;
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 18px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+
+  &.focused {
+    border-color: var(--brand);
+    box-shadow:
+      0 0 0 5px color-mix(in srgb, var(--brand) 16%, transparent),
+      var(--shadow);
+  }
+}
+
+.bolt {
+  color: var(--goal);
+  font-variation-settings: 'FILL' 1;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font:
+    500 16px 'Instrument Sans',
+    sans-serif;
+
+  &::placeholder {
+    color: var(--ink-3);
+  }
+}
+
+.go {
+  width: 44px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 4px 0;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 13px;
+  font-weight: 600;
+
+  &:has(app-category-icon) {
+    padding-left: 5px;
+  }
+
+  &.num {
+    color: var(--expense);
+    font-size: 14px;
+  }
+
+  &.num.in {
+    color: var(--income);
+  }
+
+  &.missing {
+    background: transparent;
+    border: 1.5px dashed var(--ink-3);
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+
+  &.desc {
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+}
+
+.hint {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--ink-3);
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .hint {
+    display: none;
+  }
+}

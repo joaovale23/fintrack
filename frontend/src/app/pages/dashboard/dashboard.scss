@@ -1,0 +1,483 @@
+/* Itens da grade podem encolher: sem isso, a fileira de chips alarga a página no celular. */
+:host > *,
+.filters > * {
+  min-width: 0;
+}
+
+:host {
+  display: grid;
+  gap: 20px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr minmax(320px, 440px);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 14px;
+  padding: 8px 0;
+
+  h1 {
+    font-size: clamp(48px, 8vw, 96px);
+    line-height: 0.9;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    animation: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .year {
+    font-size: 0.28em;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--ink-3);
+    margin-left: 10px;
+    vertical-align: top;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .retro {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 44px;
+    padding: 0 18px 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font:
+      700 14px 'Instrument Sans',
+      sans-serif;
+    cursor: pointer;
+    transition:
+      transform 0.15s,
+      filter 0.2s;
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+  }
+}
+
+.balance {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 220px;
+  padding: 26px;
+  border-radius: 28px;
+  background: var(--contrast-bg);
+  color: var(--contrast-fg);
+  box-shadow: var(--shadow);
+
+  .deco {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+
+    path {
+      fill: none;
+      stroke: var(--goal);
+      stroke-width: 2;
+      stroke-dasharray: 600;
+      animation: deco 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    path + path {
+      stroke: var(--brand);
+      animation-delay: 0.2s;
+    }
+  }
+
+  > * {
+    position: relative;
+  }
+
+  .label {
+    font-size: 14px;
+    opacity: 0.72;
+  }
+
+  .amount {
+    font-size: clamp(38px, 5vw, 54px);
+    font-weight: 700;
+    line-height: 1.05;
+    margin: 4px 0 18px;
+  }
+
+  &.negative .amount {
+    color: var(--expense);
+  }
+
+  .split.empty span {
+    opacity: 0.25;
+  }
+
+  .split {
+    display: flex;
+    gap: 3px;
+    height: 10px;
+
+    span {
+      border-radius: 999px;
+      transition: flex-basis 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .in {
+      background: var(--income);
+    }
+
+    .out {
+      flex: 1;
+      background: var(--expense);
+    }
+  }
+
+  .legs {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    font-size: 13px;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.85;
+    }
+
+    b {
+      font-weight: 600;
+    }
+
+    i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .in {
+      background: var(--income);
+    }
+
+    .out {
+      background: var(--expense);
+    }
+  }
+}
+
+.skeleton.on-dark {
+  display: block;
+  opacity: 0.18;
+}
+
+@keyframes deco {
+  from {
+    stroke-dashoffset: 600;
+  }
+}
+
+.insights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* Flex com base de 200px: os cartões crescem até preencher a linha, sem sobrar espaço à direita. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  li {
+    --tone: var(--goal);
+    flex: 1 1 200px;
+    position: relative;
+    display: grid;
+    align-content: end;
+    gap: 4px;
+    min-height: 112px;
+    padding: 16px 18px;
+    border-radius: 22px;
+    border: 1px solid color-mix(in srgb, var(--tone) 22%, var(--line));
+    background: color-mix(in srgb, var(--tone) 6%, var(--surface));
+    overflow: hidden;
+    isolation: isolate;
+
+    &.good {
+      --tone: var(--income);
+    }
+
+    &.bad {
+      --tone: var(--expense);
+    }
+  }
+
+  /* Ícone gigante no canto, girado e quase transparente: ilustra o cartão sem disputar com o número. */
+  .art {
+    position: absolute;
+    z-index: -1;
+    right: -18px;
+    bottom: -30px;
+    font-size: 128px;
+    line-height: 1;
+    color: var(--tone);
+    opacity: 0.13;
+    transform: rotate(-14deg);
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 0.3s;
+  }
+
+  li:hover .art {
+    transform: rotate(-4deg) scale(1.06);
+    opacity: 0.2;
+  }
+
+  .value {
+    font:
+      800 30px/1.05 'Bricolage Grotesque',
+      sans-serif;
+    letter-spacing: -0.03em;
+    color: var(--tone);
+  }
+
+  .caption {
+    max-width: 22ch;
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--ink-2);
+  }
+}
+
+@media (max-width: 720px) {
+  /* Carrossel: um cartão e meio na tela, convidando a deslizar. */
+  .insights {
+    display: flex;
+    gap: 10px;
+    margin: 0 -16px;
+    padding: 2px 16px 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 16px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    li {
+      flex: 0 0 68%;
+      scroll-snap-align: start;
+    }
+  }
+}
+
+.block {
+  padding: 22px 24px 24px;
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  h2 {
+    font-size: 21px;
+    font-weight: 700;
+  }
+
+  .sub {
+    margin: 4px 0 0;
+    color: var(--ink-2);
+    font-size: 13px;
+  }
+
+  .link {
+    font-weight: 600;
+    text-decoration: none;
+  }
+}
+
+.pace-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 20px;
+}
+
+.upcoming {
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .what {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+
+    b {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    small {
+      color: var(--ink-2);
+    }
+
+    small.soon {
+      color: var(--goal);
+      font-weight: 700;
+    }
+  }
+
+  .num {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .num.in {
+    color: var(--income);
+  }
+
+  .empty {
+    color: var(--ink-2);
+    display: block;
+  }
+}
+
+.duo {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 20px;
+}
+
+.goals {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 4px 0;
+  }
+
+  .goal-text {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .goal-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+
+  .num {
+    font-size: 17px;
+    font-weight: 700;
+
+    small {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-2);
+    }
+  }
+
+  .bad {
+    color: var(--expense);
+    font-weight: 600;
+  }
+
+  .muted {
+    color: var(--ink-2);
+  }
+
+  .empty {
+    background: none;
+    color: var(--ink-2);
+    grid-column: 1 / -1;
+    display: block;
+  }
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+
+  p {
+    flex: 1;
+    margin: 0;
+  }
+
+  span {
+    color: var(--expense);
+  }
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .pace-row,
+  .duo {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .block {
+    padding: 18px;
+  }
+
+  .block header .btn {
+    display: none;
+  }
+}
+
+.empty-li {
+  display: block !important;
+  grid-column: 1 / -1;
+  background: none !important;
+}

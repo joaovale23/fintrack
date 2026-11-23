@@ -1,0 +1,87 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="box">
+  <div class="top">
+    <app-jar
+      [percent]="previewPercent()"
+      [color]="preview().color ?? '#2d8fd5'"
+      style="--jar-w: 92px"
+    />
+    <div>
+      <span class="eyebrow">{{ goal ? 'Editar cofrinho' : 'Novo cofrinho' }}</span>
+      <h2>{{ preview().name || 'Para que você está juntando?' }}</h2>
+    </div>
+  </div>
+
+  <label class="field">
+    <span>Nome</span>
+    <input
+      formControlName="name"
+      maxlength="60"
+      placeholder="Ex.: Viagem para o Chile"
+      cdkFocusInitial
+    />
+  </label>
+  <div class="row">
+    <label class="field">
+      <span>Quanto quer juntar</span>
+      <input formControlName="target" inputmode="decimal" placeholder="R$ 0,00" />
+    </label>
+    <label class="field">
+      <span>Até quando <em>(opcional)</em></span>
+      <input formControlName="deadline" type="month" />
+    </label>
+  </div>
+
+  <span class="eyebrow">Ícone</span>
+  <div class="icons" role="radiogroup" aria-label="Ícone">
+    @for (icon of icons; track icon) {
+      <button
+        type="button"
+        role="radio"
+        [class.active]="preview().icon === icon"
+        [attr.aria-checked]="preview().icon === icon"
+        [attr.aria-label]="icon"
+        (click)="form.controls.icon.setValue(icon)"
+      >
+        <span class="material-symbols-rounded" [class.filled]="preview().icon === icon">{{
+          icon
+        }}</span>
+      </button>
+    }
+  </div>
+
+  <span class="eyebrow">Cor</span>
+  <div class="colors" role="radiogroup" aria-label="Cor">
+    @for (color of palette; track color) {
+      <button
+        type="button"
+        role="radio"
+        [style.background]="color"
+        [class.active]="preview().color === color"
+        [attr.aria-checked]="preview().color === color"
+        [attr.aria-label]="'Cor ' + color"
+        (click)="form.controls.color.setValue(color)"
+      ></button>
+    }
+  </div>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  <footer>
+    @if (goal) {
+      <button
+        type="button"
+        class="icon-button danger"
+        (click)="remove()"
+        aria-label="Apagar cofrinho"
+      >
+        <span class="material-symbols-rounded">delete</span>
+      </button>
+    }
+    <button type="button" class="btn ghost" mat-dialog-close>Cancelar</button>
+    <button type="submit" class="btn primary" [disabled]="saving()">
+      {{ saving() ? 'Salvando…' : 'Salvar' }}
+    </button>
+  </footer>
+</form>
