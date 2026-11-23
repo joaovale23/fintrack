@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.random.RandomGenerator;
-import java.util.random.RandomGeneratorFactory;
+import java.util.SplittableRandom;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,7 +43,8 @@ class DemoData {
 
     void fill(User user, Map<String, Category> c, LocalDate today) {
         // Semente fixa: todo visitante vê a mesma história, o que facilita uma demonstração.
-        RandomGenerator rnd = RandomGeneratorFactory.of("L64X128MixRandom").create(42);
+        // SplittableRandom fica no java.base: existe em qualquer imagem, inclusive em JREs enxutos.
+        RandomGenerator rnd = new SplittableRandom(42);
         List<Transaction> list = new ArrayList<>();
         YearMonth current = YearMonth.from(today);
         YearMonth first = current.minusMonths(5);

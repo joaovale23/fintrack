@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**", "/actuator/health/**", "/api/docs/**", "/swagger-ui/**").permitAll()
+                        // Sem isso, um erro 500 vira 401: o Spring encaminha para /error e o filtro barra.
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(rs -> rs.jwt(jwt -> {}))
                 .build();
