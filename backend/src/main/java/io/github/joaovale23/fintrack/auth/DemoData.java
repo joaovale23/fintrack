@@ -22,7 +22,7 @@ import java.util.SplittableRandom;
 import org.springframework.stereotype.Component;
 
 /**
- * Gera seis meses de lançamentos plausíveis para a conta de visitante, sempre relativos à data de hoje,
+ * Gera seis meses de lançamentos plausíveis para a conta de demonstração, sempre relativos à data de hoje,
  * para que o painel nunca apareça vazio nem com dados "velhos".
  */
 @Component
@@ -42,7 +42,7 @@ class DemoData {
     }
 
     void fill(User user, Map<String, Category> c, LocalDate today) {
-        // Semente fixa: todo visitante vê a mesma história, o que facilita uma demonstração.
+        // Semente fixa: toda demonstração conta a mesma história, o que facilita uma demonstração.
         // SplittableRandom fica no java.base: existe em qualquer imagem, inclusive em JREs enxutos.
         RandomGenerator rnd = new SplittableRandom(42);
         List<Transaction> list = new ArrayList<>();

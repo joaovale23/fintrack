@@ -29,7 +29,7 @@ export class LoginPage {
   protected readonly theme = inject(ThemeService);
 
   protected readonly mode = signal<'login' | 'register'>('login');
-  protected readonly loading = signal<'login' | 'register' | 'demo' | null>(null);
+  protected readonly loading = signal<'login' | 'register' | 'guest' | 'demo' | null>(null);
   protected readonly error = signal<string | null>(null);
   /** Posição do ponteiro de -1 a 1: move os cartões de fundo em camadas (paralaxe). */
   protected readonly pointer = signal({ x: 0, y: 0 });
@@ -76,11 +76,18 @@ export class LoginPage {
     this.run('register', this.auth.register(name, email, password));
   }
 
+  guest(): void {
+    this.run('guest', this.auth.guest());
+  }
+
   demo(): void {
     this.run('demo', this.auth.demo());
   }
 
-  private run(kind: 'login' | 'register' | 'demo', request: Observable<AuthResponse>): void {
+  private run(
+    kind: 'login' | 'register' | 'guest' | 'demo',
+    request: Observable<AuthResponse>,
+  ): void {
     this.loading.set(kind);
     this.error.set(null);
     request.subscribe({

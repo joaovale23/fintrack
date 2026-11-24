@@ -26,7 +26,7 @@ public class User {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    /** Conta de visitante, criada pelo botão "Entrar como visitante" e apagada depois de um tempo. */
+    /** Conta temporária (visitante ou demonstração), sem e-mail nem senha, apagada depois de um tempo. */
     @Column(nullable = false)
     private boolean demo;
 

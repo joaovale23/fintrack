@@ -163,33 +163,37 @@ export const AVATARS = [
       @case ('sapo') {
         <svg viewBox="0 0 64 64" aria-hidden="true">
           <rect width="64" height="64" fill="#dcf0d4" />
-          <circle cx="21" cy="28" r="9" fill="#68bd66" />
-          <circle cx="43" cy="28" r="9" fill="#68bd66" />
-          <ellipse cx="32" cy="43" rx="22" ry="15" fill="#68bd66" />
-          <circle cx="21" cy="27" r="6" fill="#fff" />
-          <circle cx="43" cy="27" r="6" fill="#fff" />
-          <circle cx="22" cy="28" r="3.1" fill="#1e2a1f" />
-          <circle cx="42" cy="28" r="3.1" fill="#1e2a1f" />
-          <circle cx="23" cy="27" r="1" fill="#fff" />
-          <circle cx="43" cy="27" r="1" fill="#fff" />
+          <ellipse cx="32" cy="44" rx="23" ry="15" fill="#68bd66" />
+          <!-- coroa de ouro (o sapo virou rei do orçamento): apoiada no topo da cabeça, atrás dos olhos -->
           <path
-            d="M19 44 Q 32 55 45 44"
-            fill="none"
-            stroke="#2c6e36"
-            stroke-width="2.4"
-            stroke-linecap="round"
-          />
-          <circle cx="15.5" cy="46" r="3" fill="#f29b8a" opacity="0.55" />
-          <circle cx="48.5" cy="46" r="3" fill="#f29b8a" opacity="0.55" />
-          <!-- coroa de ouro (o sapo virou rei do orçamento) -->
-          <path
-            d="M24 26 L 25.5 15 L 29 20 L 32 12.5 L 35 20 L 38.5 15 L 40 26 Z"
+            d="M24.5 31 L 23 18.5 L 28 23 L 32 14.5 L 36 23 L 41 18.5 L 39.5 31 Z"
             fill="#f2c14e"
             stroke="#c9962b"
             stroke-width="1"
             stroke-linejoin="round"
           />
-          <circle cx="32" cy="22" r="1.6" fill="#d64545" />
+          <circle cx="23" cy="18.5" r="1.4" fill="#f2c14e" stroke="#c9962b" stroke-width="0.8" />
+          <circle cx="32" cy="14.5" r="1.4" fill="#f2c14e" stroke="#c9962b" stroke-width="0.8" />
+          <circle cx="41" cy="18.5" r="1.4" fill="#f2c14e" stroke="#c9962b" stroke-width="0.8" />
+          <circle cx="32" cy="26" r="1.8" fill="#d64545" />
+          <path d="M25 31.5 Q 32 29.5 39 31.5" fill="none" stroke="#4f9a4d" stroke-width="1.4" />
+          <circle cx="18.5" cy="31" r="9" fill="#68bd66" />
+          <circle cx="45.5" cy="31" r="9" fill="#68bd66" />
+          <circle cx="18.5" cy="30" r="6" fill="#fff" />
+          <circle cx="45.5" cy="30" r="6" fill="#fff" />
+          <circle cx="19.5" cy="31" r="3.1" fill="#1e2a1f" />
+          <circle cx="44.5" cy="31" r="3.1" fill="#1e2a1f" />
+          <circle cx="20.5" cy="30" r="1" fill="#fff" />
+          <circle cx="45.5" cy="30" r="1" fill="#fff" />
+          <path
+            d="M20 46 Q 32 56 44 46"
+            fill="none"
+            stroke="#2c6e36"
+            stroke-width="2.4"
+            stroke-linecap="round"
+          />
+          <circle cx="14.5" cy="47" r="3" fill="#f29b8a" opacity="0.55" />
+          <circle cx="49.5" cy="47" r="3" fill="#f29b8a" opacity="0.55" />
         </svg>
       }
       @case ('coala') {

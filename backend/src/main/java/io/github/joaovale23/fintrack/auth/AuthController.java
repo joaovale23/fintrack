@@ -29,6 +29,12 @@ public class AuthController {
         return service.login(req);
     }
 
+    @PostMapping("/guest")
+    @ResponseStatus(HttpStatus.CREATED)
+    AuthResponse guest() {
+        return service.guest();
+    }
+
     @PostMapping("/demo")
     @ResponseStatus(HttpStatus.CREATED)
     AuthResponse demo() {

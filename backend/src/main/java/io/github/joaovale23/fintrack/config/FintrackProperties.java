@@ -13,6 +13,6 @@ public record FintrackProperties(Jwt jwt, Cors cors, Demo demo) {
 
     public record Cors(List<String> allowedOrigins) {}
 
-    /** Contas de visitante: criadas com dados de exemplo e apagadas depois de {@code ttl}. */
+    /** Contas temporárias (visitante e demonstração): apagadas depois de {@code ttl}. */
     public record Demo(Duration ttl) {}
 }

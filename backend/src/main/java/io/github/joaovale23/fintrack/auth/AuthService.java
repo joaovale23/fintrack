@@ -51,15 +51,30 @@ public class AuthService {
                 .orElseThrow(InvalidCredentialsException::new);
     }
 
-    /** Conta descartável com dados de exemplo: quem visita o portfólio entra sem se cadastrar. */
+    /**
+     * Conta de visitante: usa o app de verdade sem e-mail nem senha. Começa vazia, só com as categorias
+     * iniciais, como uma conta nova. Some depois de 24 horas.
+     */
+    @Transactional
+    public AuthResponse guest() {
+        User user = temporaryUser("Visitante");
+        starterCategories.createFor(user);
+        return tokens.issue(user);
+    }
+
+    /** Demonstração: conta temporária já com seis meses de dados de exemplo, para ver o app funcionando. */
     @Transactional
     public AuthResponse demo() {
-        String id = UUID.randomUUID().toString();
-        // Senha aleatória que ninguém conhece: a conta só é acessível pelo token devolvido aqui.
-        User user = users.save(new User("Visitante", "visitante-" + id + "@demo.fintrack",
-                passwordEncoder.encode(UUID.randomUUID().toString()), true));
+        User user = temporaryUser("Demonstração");
         demoData.fill(user, starterCategories.createFor(user), LocalDate.now(clock));
         return tokens.issue(user);
+    }
+
+    private User temporaryUser(String name) {
+        String id = UUID.randomUUID().toString();
+        // Senha aleatória que ninguém conhece: a conta só é acessível pelo token devolvido aqui.
+        return users.save(new User(name, "visitante-" + id + "@demo.fintrack",
+                passwordEncoder.encode(UUID.randomUUID().toString()), true));
     }
 
     private static String normalize(String email) {

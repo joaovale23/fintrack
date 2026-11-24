@@ -45,7 +45,14 @@ export class AuthService {
       .pipe(tap((r) => this.store(r)));
   }
 
-  /** Cria uma conta de visitante com dados de exemplo. */
+  /** Conta de visitante: vazia, para usar o app sem e-mail nem senha. */
+  guest(): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/api/auth/guest`, {})
+      .pipe(tap((r) => this.store(r)));
+  }
+
+  /** Demonstração: conta temporária já preenchida com seis meses de dados de exemplo. */
   demo(): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${environment.apiUrl}/api/auth/demo`, {})

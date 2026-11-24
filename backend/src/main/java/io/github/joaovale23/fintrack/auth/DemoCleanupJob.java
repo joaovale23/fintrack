@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Apaga as contas de visitante antigas, para o banco gratuito não crescer sem limite. */
+/** Apaga as contas temporárias (visitante e demonstração) antigas, para o banco gratuito não crescer sem limite. */
 @Component
 class DemoCleanupJob {
 
@@ -30,7 +30,7 @@ class DemoCleanupJob {
     void deleteExpiredDemoUsers() {
         int deleted = users.deleteDemoUsersCreatedBefore(clock.instant().minus(props.demo().ttl()));
         if (deleted > 0) {
-            log.info("{} contas de visitante expiradas foram apagadas", deleted);
+            log.info("{} contas temporárias expiradas foram apagadas", deleted);
         }
     }
 }

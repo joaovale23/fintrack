@@ -77,6 +77,8 @@ public class SecurityConfig {
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);
+        // O front consulta a liveness ao abrir, para avisar quando a API gratuita está acordando.
+        source.registerCorsConfiguration("/actuator/health/**", config);
         return source;
     }
 }

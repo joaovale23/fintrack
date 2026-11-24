@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -135,7 +136,30 @@ class ApiIT {
     }
 
     @Test
-    void visitanteEntraComSeisMesesDeDadosDeExemplo() throws Exception {
+    void frontConsegueConsultarSeAApiEstaAcordada() throws Exception {
+        mvc.perform(get("/actuator/health/liveness").header("Origin", "http://localhost:4200"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:4200"));
+    }
+
+    @Test
+    void visitanteEntraNumaContaVaziaSoComAsCategoriasIniciais() throws Exception {
+        var result = mvc.perform(post("/api/auth/guest"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.user.demo").value(true))
+                .andExpect(jsonPath("$.user.name").value("Visitante"))
+                .andReturn();
+        String token = JsonPath.read(result.getResponse().getContentAsString(), "$.token");
+
+        mvc.perform(auth(get("/api/summary"), token))
+                .andExpect(jsonPath("$.income").value(0))
+                .andExpect(jsonPath("$.expense").value(0));
+        mvc.perform(auth(get("/api/savings"), token)).andExpect(jsonPath("$.length()").value(0));
+        mvc.perform(auth(get("/api/categories"), token)).andExpect(jsonPath("$.length()").isNotEmpty());
+    }
+
+    @Test
+    void demonstracaoEntraComSeisMesesDeDadosDeExemplo() throws Exception {
         var result = mvc.perform(post("/api/auth/demo"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.user.demo").value(true))
@@ -182,7 +206,7 @@ class ApiIT {
     }
 
     @Test
-    void visitanteJaComecaComCofrinhos() throws Exception {
+    void demonstracaoJaComecaComCofrinhos() throws Exception {
         var result = mvc.perform(post("/api/auth/demo")).andExpect(status().isCreated()).andReturn();
         String token = JsonPath.read(result.getResponse().getContentAsString(), "$.token");
         mvc.perform(auth(get("/api/savings"), token))

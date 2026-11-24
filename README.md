@@ -3,8 +3,11 @@
 Controle financeiro pessoal: receitas, despesas, metas de gasto por categoria e um painel mensal.
 Front em **Angular 22** e API em **Java 21 + Spring Boot 4**, com PostgreSQL.
 
-> **Entrar como visitante:** a tela de login tem um botão que cria uma conta temporária com seis meses de
-> dados de exemplo, sem cadastro. A conta é apagada automaticamente depois de 24 horas.
+> **Sem cadastro:** na tela de login, **Entrar como visitante** abre uma conta em branco para usar de verdade, e
+> **Ver exemplo preenchido** abre uma com seis meses de dados de exemplo. As duas são apagadas depois de 24 horas.
+>
+> A API roda no plano gratuito do Render e fica acordada das 8h às 19h (horário de Brasília). Fora desse horário,
+> o primeiro acesso leva cerca de 1 minuto, e o app avisa enquanto o servidor liga.
 
 ## O que dá para fazer
 
@@ -32,7 +35,7 @@ Front em **Angular 22** e API em **Java 21 + Spring Boot 4**, com PostgreSQL.
 - **Categorias** com ícone, cor e meta mensal de gastos; a API impede apagar uma categoria que tem lançamentos.
 - **Tema claro e escuro**, com a troca se abrindo em círculo a partir do clique; atalho `N` para novo lançamento;
   no celular, barra inferior e um botão flutuante que mostra "Lançar" no topo e encolhe para "+" ao rolar.
-- Conta própria (JWT, senha com BCrypt) ou **entrada como visitante**, com seis meses de dados de exemplo.
+- Conta própria (JWT, senha com BCrypt), **conta de visitante** em branco ou **exemplo preenchido** com seis meses de dados.
 
 ## Stack
 
@@ -103,7 +106,8 @@ cd frontend && npm test -- --watch=false
 
 | Método | Caminho | O que faz |
 |---|---|---|
-| POST | `/api/auth/register` · `/api/auth/login` · `/api/auth/demo` | Cadastro, login e conta de visitante |
+| POST | `/api/auth/register` · `/api/auth/login` | Cadastro e login |
+| POST | `/api/auth/guest` · `/api/auth/demo` | Conta de visitante (vazia) e exemplo preenchido, ambos temporários |
 | GET / POST | `/api/categories` | Lista e cria categorias |
 | PUT / DELETE | `/api/categories/{id}` | Edita e apaga categoria |
 | GET / POST | `/api/transactions?month=&type=&categoryId=&search=&page=&size=` | Lista com filtros e cria lançamento |

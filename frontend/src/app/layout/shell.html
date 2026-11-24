@@ -26,7 +26,7 @@
 
   <div class="sidebar-foot">
     @if (user()?.demo) {
-      <p class="demo-note"><i></i> Conta de visitante · some em 24 h</p>
+      <p class="demo-note"><i></i> Conta temporária · some em 24 h</p>
     }
     <div class="me">
       <button
@@ -40,7 +40,7 @@
       </button>
       <span class="who">
         <b>{{ user()?.name }}</b>
-        <small>{{ user()?.demo ? 'Dados de exemplo' : user()?.email }}</small>
+        <small>{{ user()?.demo ? 'Conta temporária' : user()?.email }}</small>
       </span>
     </div>
     <div class="tools">
@@ -102,7 +102,7 @@
   <mat-menu #menu="matMenu" xPosition="before">
     <div class="menu-head">
       <b>{{ user()?.name }}</b>
-      <small>{{ user()?.demo ? 'Conta de visitante (some em 24 h)' : user()?.email }}</small>
+      <small>{{ user()?.demo ? 'Conta temporária (some em 24 h)' : user()?.email }}</small>
     </div>
     <button mat-menu-item (click)="pickAvatar()">
       <span class="material-symbols-rounded menu-icon">face</span> Trocar foto de perfil

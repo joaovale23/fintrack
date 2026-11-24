@@ -23,13 +23,24 @@
     Lance em segundos, acompanhe metas por categoria e veja o caminho de cada real no fluxo do mês.
   </p>
 
-  <button class="btn demo" (click)="demo()" [disabled]="loading() !== null">
-    <span class="material-symbols-rounded">{{
-      loading() === 'demo' ? 'hourglass_top' : 'visibility'
-    }}</span>
-    {{ loading() === 'demo' ? 'Preparando seus dados…' : 'Entrar como visitante' }}
-  </button>
-  <p class="hint">Cria uma conta temporária com seis meses de dados de exemplo. Sem cadastro.</p>
+  <div class="try">
+    <button class="btn demo" (click)="guest()" [disabled]="loading() !== null">
+      <span class="material-symbols-rounded">{{
+        loading() === 'guest' ? 'hourglass_top' : 'person'
+      }}</span>
+      {{ loading() === 'guest' ? 'Abrindo sua conta…' : 'Entrar como visitante' }}
+    </button>
+    <button class="btn ghost sample" (click)="demo()" [disabled]="loading() !== null">
+      <span class="material-symbols-rounded">{{
+        loading() === 'demo' ? 'hourglass_top' : 'visibility'
+      }}</span>
+      {{ loading() === 'demo' ? 'Preparando o exemplo…' : 'Ver exemplo preenchido' }}
+    </button>
+  </div>
+  <p class="hint">
+    <b>Visitante:</b> conta em branco para usar de verdade, sem e-mail nem senha.
+    <b>Exemplo:</b> seis meses de dados prontos para explorar. As duas somem em 24&nbsp;h.
+  </p>
 
   <div class="scene" aria-hidden="true">
     <div class="float f1" style="--depth: 18">
