@@ -40,6 +40,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**", "/actuator/health/**", "/api/docs/**", "/swagger-ui/**").permitAll()
                         // Sem isso, um erro 500 vira 401: o Spring encaminha para /error e o filtro barra.
                         .requestMatchers("/error").permitAll()
+                        // Erros do front chegam até da tela de entrada, antes do login.
+                        .requestMatchers(HttpMethod.POST, "/api/errors").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(rs -> rs.jwt(jwt -> {}))
                 .build();

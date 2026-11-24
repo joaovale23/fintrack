@@ -31,6 +31,13 @@ fintrack:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
   demo:
     ttl: 24h
+  admin:
+    # Contas que veem o painel /admin (separadas por vírgula). Em produção, variável ADMIN_EMAILS.
+    emails: ${ADMIN_EMAILS:}
+  support:
+    # Remetente dos avisos por e-mail (precisa estar validado na Brevo). Vazio desliga os avisos.
+    from: ${SUPPORT_FROM:}
+    panel-url: ${SUPPORT_PANEL_URL:http://localhost:4200/admin}
 
 springdoc:
   api-docs:
@@ -70,3 +77,16 @@ spring:
     password: ${DATABASE_PASSWORD}
     hikari:
       maximum-pool-size: 5
+  # Avisos de relatos e erros novos pela Brevo, a mesma conta do hexfolio.
+  mail:
+    host: ${SMTP_HOST:smtp-relay.brevo.com}
+    # O plano gratuito do Render bloqueia a saída pelas portas 25, 465 e 587. A Brevo também atende na 2525.
+    port: ${SMTP_PORT:2525}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.connectiontimeout: 10000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000

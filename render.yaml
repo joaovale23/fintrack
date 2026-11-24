@@ -29,3 +29,14 @@ services:
         sync: false
       - key: DATABASE_PASSWORD
         sync: false
+      # Painel /admin e avisos por e-mail de relatos e erros novos (Brevo, porta 2525).
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: SUPPORT_FROM
+        sync: false
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SUPPORT_PANEL_URL
+        value: https://joaovale23.github.io/fintrack/admin

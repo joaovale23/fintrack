@@ -69,6 +69,18 @@ export class AuthService {
     );
   }
 
+  /** Busca o usuário de novo (avatar, admin): sessões antigas ficam em dia sem precisar sair e entrar. */
+  refreshMe(): void {
+    if (!this.token()) return;
+    this.http.get<User>(`${environment.apiUrl}/api/me`).subscribe({
+      next: (user) => {
+        const session = this.session();
+        if (session) this.persist({ ...session, user });
+      },
+      error: () => undefined,
+    });
+  }
+
   logout(): void {
     this.clear();
     void this.router.navigate(['/login']);

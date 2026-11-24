@@ -1,5 +1,6 @@
 package io.github.joaovale23.fintrack.user;
 
+import io.github.joaovale23.fintrack.admin.AdminAccess;
 import io.github.joaovale23.fintrack.auth.AuthResponse;
 import io.github.joaovale23.fintrack.common.NotFoundException;
 import io.github.joaovale23.fintrack.config.CurrentUser;
@@ -21,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProfileController {
 
     private final UserRepository users;
+    private final AdminAccess admins;
 
-    public ProfileController(UserRepository users) {
+    public ProfileController(UserRepository users, AdminAccess admins) {
         this.users = users;
+        this.admins = admins;
     }
 
     public record AvatarRequest(String avatar) {}
@@ -31,7 +34,8 @@ public class ProfileController {
     @GetMapping
     @Transactional(readOnly = true)
     AuthResponse.UserInfo me(@AuthenticationPrincipal Jwt jwt) {
-        return AuthResponse.UserInfo.from(find(jwt));
+        User user = find(jwt);
+        return AuthResponse.UserInfo.from(user, admins.isAdmin(user));
     }
 
     /** {@code avatar} nulo volta para as iniciais. */
@@ -43,7 +47,7 @@ public class ProfileController {
         }
         User user = find(jwt);
         user.changeAvatar(req.avatar());
-        return AuthResponse.UserInfo.from(user);
+        return AuthResponse.UserInfo.from(user, admins.isAdmin(user));
     }
 
     private User find(Jwt jwt) {

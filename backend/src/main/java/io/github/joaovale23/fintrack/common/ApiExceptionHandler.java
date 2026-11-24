@@ -2,6 +2,10 @@ package io.github.joaovale23.fintrack.common;
 
 import io.github.joaovale23.fintrack.auth.InvalidCredentialsException;
 import io.github.joaovale23.fintrack.statement.InvalidStatementException;
+import io.github.joaovale23.fintrack.support.ErrorLog;
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,6 +29,26 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  */
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
+
+    private final ErrorLog errorLog;
+
+    public ApiExceptionHandler(ErrorLog errorLog) {
+        this.errorLog = errorLog;
+    }
+
+    /** Erro inesperado: registra para aparecer no painel (e avisar por e-mail) e responde 500 sem expor detalhes. */
+    @ExceptionHandler(Exception.class)
+    ProblemDetail unexpected(Exception e, HttpServletRequest request) {
+        log.error("Erro inesperado em {} {}", request.getMethod(), request.getRequestURI(), e);
+        StringWriter trace = new StringWriter();
+        e.printStackTrace(new PrintWriter(trace));
+        errorLog.record("API", e.getClass().getSimpleName() + ": " + e.getMessage(), trace.toString(),
+                request.getMethod() + " " + request.getRequestURI(), request.getHeader("User-Agent"));
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Algo deu errado do nosso lado. O erro foi registrado e vai ser corrigido.");
+    }
 
     @ExceptionHandler(NotFoundException.class)
     ProblemDetail notFound(NotFoundException e) {

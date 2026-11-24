@@ -8,6 +8,12 @@ export const authGuard: CanActivateFn = () => {
   return auth.token() ? true : inject(Router).createUrlTree(['/login']);
 };
 
+/** Painel de administração: só para quem a API marca como admin. */
+export const adminGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  return auth.user()?.admin ? true : inject(Router).createUrlTree(['/']);
+};
+
 /** Página de login: quem já entrou vai direto para o painel. */
 export const guestGuard: CanActivateFn = () => {
   const auth = inject(AuthService);

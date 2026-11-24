@@ -7,6 +7,8 @@ export interface User {
   demo: boolean;
   /** Personagem escolhido (porquinho, raposa...); nulo mostra as iniciais. */
   avatar?: string | null;
+  /** Vê o painel /admin (uso, relatos e erros). */
+  admin?: boolean;
 }
 
 export interface AuthResponse {

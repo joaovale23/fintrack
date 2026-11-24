@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './core/auth.guard';
+import { adminGuard, authGuard, guestGuard } from './core/auth.guard';
 
 /** Cada página é carregada só quando a pessoa entra nela (lazy loading). */
 export const routes: Routes = [
@@ -40,6 +40,12 @@ export const routes: Routes = [
         path: 'categorias',
         title: 'Categorias · fintrack',
         loadComponent: () => import('./pages/categories/categories').then((m) => m.CategoriesPage),
+      },
+      {
+        path: 'admin',
+        canActivate: [adminGuard],
+        title: 'Bastidores · fintrack',
+        loadComponent: () => import('./pages/admin/admin').then((m) => m.AdminPage),
       },
     ],
   },

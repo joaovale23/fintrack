@@ -16,6 +16,7 @@ import { TransactionService } from '../core/transaction.service';
 import { RecurringDialog } from '../pages/recurring/recurring-dialog';
 import { GoalDialog } from '../pages/savings/goal-dialog';
 import { CategoryIcon } from './category-icon';
+import { SupportDialog } from './support-dialog';
 
 interface Item {
   id: string;
@@ -192,6 +193,14 @@ export class CommandPalette {
       icon: 'category',
       label: 'Categorias',
       run: () => this.go('/categorias'),
+    },
+    {
+      id: 'a-help',
+      section: 'Conta',
+      icon: 'support',
+      label: 'Relatar problema',
+      keywords: 'bug erro suporte ajuda contato ideia sugestão',
+      run: () => this.dialog.open(SupportDialog, { backdropClass: 'soft-backdrop' }),
     },
     { id: 'a-out', section: 'Conta', icon: 'logout', label: 'Sair', run: () => this.auth.logout() },
   ];

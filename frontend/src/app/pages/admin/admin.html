@@ -1,0 +1,184 @@
+<section class="head">
+  <div>
+    <span class="eyebrow">Só você vê esta página</span>
+    <h1 class="display">Bastidores</h1>
+    <p class="sub">
+      Quem está usando o fintrack, o que as pessoas relataram e os erros que o app pegou sozinho.
+    </p>
+  </div>
+  <button class="btn ghost" (click)="load()" [disabled]="loading()">
+    <span class="material-symbols-rounded">refresh</span> Atualizar
+  </button>
+</section>
+
+@if (loadError(); as message) {
+  <div class="card error-box" role="alert">
+    <span class="material-symbols-rounded">cloud_off</span>
+    <p>{{ message }}</p>
+    <button class="btn ghost" (click)="load()">Tentar de novo</button>
+  </div>
+}
+
+<ul class="stats" aria-label="Números de uso">
+  @for (c of cards(); track c.label) {
+    <li [class]="c.tone" animate.enter="rise" [style.--i]="$index">
+      <span class="material-symbols-rounded filled art" aria-hidden="true">{{ c.icon }}</span>
+      <b class="num">{{ c.value }}</b>
+      <span>{{ c.label }}</span>
+      @if (c.extra) {
+        <small>{{ c.extra }}</small>
+      }
+    </li>
+  } @empty {
+    @for (i of [1, 2, 3, 4, 5]; track i) {
+      <li class="skeleton" style="height: 112px"></li>
+    }
+  }
+</ul>
+
+<section class="card block">
+  <header>
+    <div>
+      <h2>Últimos 30 dias</h2>
+      <p class="sub">
+        Pessoas que abriram o app em cada dia. Suas contas de admin não entram na conta.
+      </p>
+    </div>
+  </header>
+  @if (overview(); as o) {
+    <app-usage-chart [days]="o.days" />
+  } @else {
+    <div class="skeleton" style="height: 200px"></div>
+  }
+</section>
+
+<div class="filter">
+  <button
+    class="chip-button"
+    [class.active]="!showResolved()"
+    (click)="showResolved() && toggleResolved()"
+  >
+    Pendentes
+  </button>
+  <button
+    class="chip-button"
+    [class.active]="showResolved()"
+    (click)="!showResolved() && toggleResolved()"
+  >
+    Todos, inclusive resolvidos
+  </button>
+</div>
+
+<div class="lists">
+  <section class="card block">
+    <header>
+      <h2>
+        Relatos
+        @if (overview()?.openReports) {
+          <span class="badge">{{ overview()!.openReports }}</span>
+        }
+      </h2>
+    </header>
+    <ul class="items">
+      @for (r of reports(); track r.id) {
+        <li [class.resolved]="r.resolved" [class]="'kind-' + r.kind" animate.enter="rise">
+          <span class="kind material-symbols-rounded filled" [matTooltip]="kindLabel(r.kind)">{{
+            kindIcon(r.kind)
+          }}</span>
+          <div class="body">
+            <p class="msg">{{ r.message }}</p>
+            <p class="meta">
+              <b>{{ r.userName }}</b> · {{ ago(r.createdAt) }} · {{ r.page || '/' }} ·
+              {{ browser(r.userAgent) }}
+            </p>
+            @if (r.contactEmail) {
+              <a
+                class="reply"
+                [href]="'mailto:' + r.contactEmail + '?subject=Sobre o seu relato no fintrack'"
+              >
+                <span class="material-symbols-rounded">reply</span> Responder {{ r.contactEmail }}
+              </a>
+            }
+          </div>
+          <button
+            class="icon-button"
+            (click)="resolveReport(r)"
+            [matTooltip]="r.resolved ? 'Reabrir' : 'Marcar como resolvido'"
+            [attr.aria-label]="r.resolved ? 'Reabrir' : 'Marcar como resolvido'"
+          >
+            <span class="material-symbols-rounded">{{ r.resolved ? 'undo' : 'check' }}</span>
+          </button>
+        </li>
+      } @empty {
+        <li class="empty-li">
+          <app-empty-state
+            art="tags"
+            [compact]="true"
+            title="Nenhum relato pendente"
+            text="Quando alguém usar o botão “Relatar problema”, a mensagem aparece aqui e chega no seu e-mail."
+          />
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="card block">
+    <header>
+      <h2>
+        Erros
+        @if (overview()?.openErrors) {
+          <span class="badge bad">{{ overview()!.openErrors }}</span>
+        }
+      </h2>
+    </header>
+    <ul class="items">
+      @for (e of errors(); track e.id) {
+        <li [class.resolved]="e.resolved" animate.enter="rise">
+          <span
+            class="kind source material-symbols-rounded"
+            [matTooltip]="e.source === 'WEB' ? 'No navegador' : 'Na API'"
+            >{{ e.source === 'WEB' ? 'web' : 'dns' }}</span
+          >
+          <div class="body">
+            <p class="msg mono">{{ e.message }}</p>
+            <p class="meta">
+              <b>{{ e.occurrences }}×</b> · última {{ ago(e.lastSeen) }} · {{ e.page || '—' }} ·
+              {{ browser(e.userAgent) }}
+            </p>
+            @if (e.detail) {
+              <button class="link-button" (click)="toggleDetail(e.id)">
+                {{ openDetail() === e.id ? 'Esconder detalhes' : 'Ver detalhes' }}
+              </button>
+              @if (openDetail() === e.id) {
+                <pre class="detail" animate.enter="rise">{{ e.detail }}</pre>
+              }
+            }
+          </div>
+          <button
+            class="icon-button"
+            (click)="resolveError(e)"
+            [matTooltip]="e.resolved ? 'Reabrir' : 'Marcar como resolvido'"
+            [attr.aria-label]="e.resolved ? 'Reabrir' : 'Marcar como resolvido'"
+          >
+            <span class="material-symbols-rounded">{{ e.resolved ? 'undo' : 'check' }}</span>
+          </button>
+        </li>
+      } @empty {
+        <li class="empty-li">
+          <app-empty-state
+            art="pace"
+            [compact]="true"
+            title="Nenhum erro pendente"
+            text="Erros no site e na API são registrados sozinhos. Se um voltar a acontecer depois de resolvido, ele reabre."
+          />
+        </li>
+      }
+    </ul>
+  </section>
+</div>
+
+<p class="privacy">
+  <span class="material-symbols-rounded">lock</span>
+  Este painel só mostra contagens. Lançamentos, valores e categorias de cada pessoa nunca aparecem
+  aqui.
+</p>

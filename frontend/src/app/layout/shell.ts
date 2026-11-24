@@ -10,6 +10,7 @@ import { TransactionEditor } from '../core/transaction-editor';
 import { CommandPalette } from '../shared/command-palette';
 import { Avatar } from '../shared/avatar';
 import { AvatarPicker } from '../shared/avatar-picker';
+import { SupportDialog } from '../shared/support-dialog';
 import { Logo } from '../shared/logo';
 
 /**
@@ -53,6 +54,16 @@ export class Shell {
   ];
   protected readonly mobileLinks = this.links.filter((l) => l.mobile);
   protected readonly isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform);
+
+  constructor() {
+    // Traz o usuário atualizado (por exemplo, a marca de admin) sem precisar sair e entrar de novo.
+    this.auth.refreshMe();
+  }
+
+  /** "Relatar problema": chega por e-mail ao dono do app. */
+  openSupport(): void {
+    this.dialog.open(SupportDialog, { backdropClass: 'soft-backdrop' });
+  }
 
   /** Busca rápida (Ctrl+K / ⌘K). */
   openPalette(): void {

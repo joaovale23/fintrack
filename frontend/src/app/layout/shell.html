@@ -22,9 +22,18 @@
         {{ link.label }}
       </a>
     }
+    @if (user()?.admin) {
+      <a routerLink="/admin" routerLinkActive="active" #rlaAdmin="routerLinkActive">
+        <span class="material-symbols-rounded" [class.filled]="rlaAdmin.isActive">monitoring</span>
+        Bastidores
+      </a>
+    }
   </nav>
 
   <div class="sidebar-foot">
+    <button class="help" (click)="openSupport()">
+      <span class="material-symbols-rounded">support</span> Relatar problema
+    </button>
     @if (user()?.demo) {
       <p class="demo-note"><i></i> Conta temporária · some em 24 h</p>
     }
@@ -107,6 +116,14 @@
     <button mat-menu-item (click)="pickAvatar()">
       <span class="material-symbols-rounded menu-icon">face</span> Trocar foto de perfil
     </button>
+    <button mat-menu-item (click)="openSupport()">
+      <span class="material-symbols-rounded menu-icon">support</span> Relatar problema
+    </button>
+    @if (user()?.admin) {
+      <a mat-menu-item routerLink="/admin">
+        <span class="material-symbols-rounded menu-icon">monitoring</span> Bastidores
+      </a>
+    }
     <button mat-menu-item (click)="logout()">
       <span class="material-symbols-rounded menu-icon">logout</span> Sair
     </button>

@@ -24,10 +24,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 /** Fluxos completos pela API, com banco real (Testcontainers) e o JWT de verdade. */
-@SpringBootTest
+@SpringBootTest(properties = "fintrack.admin.emails=" + ApiIT.ADMIN)
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
 class ApiIT {
+
+    static final String ADMIN = "admin-fintrack@teste.dev";
 
     @Autowired MockMvc mvc;
 
@@ -133,6 +135,74 @@ class ApiIT {
 
         mvc.perform(auth(delete("/api/transactions/" + lancamento), token)).andExpect(status().isNoContent());
         mvc.perform(auth(delete("/api/categories/" + saude), token)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void relatoChegaAoPainelDoAdminQueResolve() throws Exception {
+        String token = register("Gabi", unique("gabi"));
+        mvc.perform(auth(post("/api/support"), token).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"kind\":\"BUG\",\"message\":\"O gráfico não abre\",\"page\":\"/lancamentos\"}"))
+                .andExpect(status().isCreated());
+        mvc.perform(auth(post("/api/support"), token).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"kind\":\"BUG\",\"message\":\"\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.message").exists());
+
+        // Quem não é admin não entra no painel.
+        mvc.perform(auth(get("/api/admin/reports"), token)).andExpect(status().isForbidden());
+
+        String admin = adminToken();
+        var list = mvc.perform(auth(get("/api/admin/reports"), admin))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.message == 'O gráfico não abre')].userName").value("Gabi"))
+                .andReturn();
+        String id = JsonPath.<java.util.List<String>>read(list.getResponse().getContentAsString(),
+                "$[?(@.message == 'O gráfico não abre')].id").getFirst();
+        // Conta real sem e-mail informado: responde no e-mail da conta.
+        mvc.perform(auth(get("/api/admin/reports"), admin))
+                .andExpect(jsonPath("$[?(@.id == '%s')].contactEmail".formatted(id)).value(org.hamcrest.Matchers.hasItem(org.hamcrest.Matchers.startsWith("gabi"))));
+
+        mvc.perform(auth(put("/api/admin/reports/" + id), admin).contentType(MediaType.APPLICATION_JSON).content("{\"resolved\":true}"))
+                .andExpect(jsonPath("$.resolved").value(true));
+        mvc.perform(auth(get("/api/admin/reports"), admin))
+                .andExpect(jsonPath("$[?(@.id == '%s')]".formatted(id)).isEmpty());
+    }
+
+    @Test
+    void relatosTemLimitePorHora() throws Exception {
+        String token = register("Hugo", unique("hugo"));
+        for (int i = 0; i < 5; i++) {
+            mvc.perform(auth(post("/api/support"), token).contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"kind\":\"IDEA\",\"message\":\"ideia %d\"}".formatted(i))).andExpect(status().isCreated());
+        }
+        mvc.perform(auth(post("/api/support"), token).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"kind\":\"IDEA\",\"message\":\"mais uma\"}")).andExpect(status().isTooManyRequests());
+    }
+
+    @Test
+    void erroDoFrontEntraSemLoginEOMesmoErroSoSomaOcorrencias() throws Exception {
+        String unico = "TypeError: teste " + UUID.randomUUID();
+        for (int i = 0; i < 3; i++) {
+            mvc.perform(post("/api/errors").contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"message\":\"%s\",\"detail\":\"%s\\n    at Foo (main-ABC%d.js:1:2)\",\"page\":\"/\"}".formatted(unico, unico, i)))
+                    .andExpect(status().isAccepted());
+        }
+        mvc.perform(auth(get("/api/admin/errors"), adminToken()))
+                .andExpect(jsonPath("$[?(@.message == '%s')].occurrences".formatted(unico)).value(org.hamcrest.Matchers.contains(3)));
+    }
+
+    @Test
+    void painelMostraUsoSemContarOAdmin() throws Exception {
+        String admin = adminToken();
+        String token = register("Iris", unique("iris"));
+        mvc.perform(auth(get("/api/categories"), token)).andExpect(status().isOk());
+
+        mvc.perform(auth(get("/api/admin/overview"), admin))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activeToday").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)))
+                .andExpect(jsonPath("$.days.length()").value(30));
+        mvc.perform(auth(get("/api/me"), admin)).andExpect(jsonPath("$.admin").value(true));
+        mvc.perform(auth(get("/api/me"), token)).andExpect(jsonPath("$.admin").value(false));
     }
 
     @Test
@@ -340,6 +410,15 @@ class ApiIT {
 
     private static MockHttpServletRequestBuilder auth(MockHttpServletRequestBuilder req, String token) {
         return req.header("Authorization", "Bearer " + token);
+    }
+
+    /** A conta de admin é criada uma vez; nas próximas chamadas só faz login. */
+    private String adminToken() throws Exception {
+        var res = mvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Admin\",\"email\":\"%s\",\"password\":\"senha-forte-123\"}".formatted(ADMIN))).andReturn();
+        return res.getResponse().getStatus() == 201
+                ? JsonPath.read(res.getResponse().getContentAsString(), "$.token")
+                : login(ADMIN, "senha-forte-123");
     }
 
     private static String unique(String name) {

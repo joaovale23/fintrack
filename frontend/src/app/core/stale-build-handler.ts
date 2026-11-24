@@ -1,4 +1,5 @@
 import { ErrorHandler, Injectable } from '@angular/core';
+import { isWorthReporting, reportClientError } from './error-reporter';
 
 const RELOADED_AT_KEY = 'fintrack.reloadedForNewBuild';
 
@@ -14,6 +15,7 @@ export function isStaleChunkError(error: unknown): boolean {
  * Cada deploy no GitHub Pages troca os arquivos e apaga os antigos. Uma aba aberta antes do deploy
  * ainda pede os pedaços da versão anterior, que dão 404 ao trocar de página. Nesse caso, recarrega
  * uma vez para pegar a versão nova. A marca de tempo evita recarregar em loop se o erro persistir.
+ * Qualquer outro erro inesperado é enviado para a API e aparece no painel de administração.
  */
 @Injectable()
 export class StaleBuildHandler extends ErrorHandler {
@@ -21,6 +23,9 @@ export class StaleBuildHandler extends ErrorHandler {
     if (isStaleChunkError(error) && this.canReload()) {
       location.reload();
       return;
+    }
+    if (isWorthReporting(error)) {
+      reportClientError(error);
     }
     super.handleError(error);
   }
