@@ -69,9 +69,12 @@ import { AVATARS, Avatar } from './avatar';
       text-align: center;
       gap: 4px;
     }
+    /* O anel fica no próprio avatar (sempre um círculo): no invólucro, a altura da linha de texto o deixava oval. */
     .chosen {
+      display: grid;
       margin-bottom: 10px;
-      border-radius: 50%;
+    }
+    .chosen app-avatar {
       box-shadow:
         0 0 0 4px var(--surface),
         0 0 0 7px var(--accent),
