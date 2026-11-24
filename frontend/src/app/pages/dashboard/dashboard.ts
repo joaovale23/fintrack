@@ -213,6 +213,22 @@ export class DashboardPage {
     });
   }
 
+  /** A retrospectiva só faz sentido com gastos no mês. */
+  protected readonly retroReady = computed(() => !!this.data()?.expense);
+  protected readonly retroHint = signal(false);
+  private hintTimer?: ReturnType<typeof setTimeout>;
+
+  /** Com gastos, abre a retrospectiva; sem, mostra um balão explicando o que ela é e quando aparece. */
+  onRetro(): void {
+    if (this.retroReady()) {
+      this.retroHint.set(false);
+      return this.openRetro();
+    }
+    this.retroHint.set(true);
+    clearTimeout(this.hintTimer);
+    this.hintTimer = setTimeout(() => this.retroHint.set(false), 4500);
+  }
+
   /** Abre a retrospectiva do mês em tela cheia (no celular) ou num "telefone" no centro (desktop). */
   openRetro(): void {
     const d = this.data();

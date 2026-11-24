@@ -6,9 +6,32 @@
     </h1>
     <div class="hero-actions">
       <app-month-switcher [(month)]="month" />
-      <button class="retro" (click)="openRetro()" [disabled]="!data() || !data()!.expense">
-        <span class="material-symbols-rounded filled">play_circle</span> Retrospectiva
-      </button>
+      <!-- No celular vira só o play, na mesma linha do mês. Sem gastos ainda, o toque explica o que é. -->
+      <div class="retro-wrap">
+        <button
+          class="retro"
+          [class.off]="!retroReady()"
+          (click)="onRetro()"
+          aria-label="Retrospectiva do mês"
+          [attr.aria-describedby]="retroHint() ? 'retro-hint' : null"
+        >
+          <span class="material-symbols-rounded filled">play_circle</span>
+          <span class="label">Retrospectiva</span>
+        </button>
+        @if (retroHint()) {
+          <p
+            id="retro-hint"
+            class="retro-hint"
+            role="status"
+            animate.enter="hint-in"
+            animate.leave="hint-out"
+          >
+            <b>Retrospectiva</b>
+            Um resumo do mês em telas, como stories. Fica disponível quando o mês tiver gastos
+            lançados.
+          </p>
+        }
+      </div>
     </div>
   </div>
 

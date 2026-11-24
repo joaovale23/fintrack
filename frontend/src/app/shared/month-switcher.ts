@@ -88,6 +88,8 @@ const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', '
       border-radius: 50%;
     }
     .label {
+      /* Quando o seletor ocupa a linha toda (celular), o mês fica no meio e as setas nas pontas. */
+      flex: 1;
       display: inline-flex;
       align-items: center;
       justify-content: center;
