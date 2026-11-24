@@ -69,6 +69,11 @@ function wholeBRL(value: number): string {
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
+  host: {
+    // O balão da retrospectiva fecha ao tocar fora dele ou com Esc.
+    '(document:pointerdown)': 'closeHintOutside($event)',
+    '(document:keydown.escape)': 'hideHint()',
+  },
 })
 export class DashboardPage {
   private readonly editor = inject(TransactionEditor);
@@ -224,9 +229,22 @@ export class DashboardPage {
       this.retroHint.set(false);
       return this.openRetro();
     }
+    // Tocar de novo no play com o balão aberto fecha o balão.
+    if (this.retroHint()) return this.hideHint();
     this.retroHint.set(true);
     clearTimeout(this.hintTimer);
-    this.hintTimer = setTimeout(() => this.retroHint.set(false), 4500);
+    this.hintTimer = setTimeout(() => this.hideHint(), 5000);
+  }
+
+  protected hideHint(): void {
+    clearTimeout(this.hintTimer);
+    this.retroHint.set(false);
+  }
+
+  protected closeHintOutside(event: PointerEvent): void {
+    if (!this.retroHint()) return;
+    const target = event.target as Element | null;
+    if (!target?.closest('.retro-wrap')) this.hideHint();
   }
 
   /** Abre a retrospectiva do mês em tela cheia (no celular) ou num "telefone" no centro (desktop). */
