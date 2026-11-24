@@ -7,7 +7,7 @@ Front em **Angular 22** e API em **Java 21 + Spring Boot 4**, com PostgreSQL.
 > **Ver exemplo preenchido** abre uma com seis meses de dados de exemplo. As duas são apagadas depois de 24 horas.
 >
 > A API roda no plano gratuito do Render e fica acordada das 8h às 19h (horário de Brasília). Fora desse horário,
-> o primeiro acesso leva cerca de 1 minuto, e o app avisa enquanto o servidor liga.
+> o primeiro acesso leva de 1 minuto a 1 minuto e meio, e o app avisa enquanto o servidor liga.
 
 ## O que dá para fazer
 

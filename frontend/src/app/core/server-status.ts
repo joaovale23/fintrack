@@ -4,8 +4,8 @@ import { environment } from '../../environments/environment';
 /** Horário em que um ping externo mantém a API acordada (fuso de São Paulo). Fora dele, ela dorme. */
 export const AWAKE_HOURS = { from: 8, to: 19 };
 
-/** Quanto a API gratuita do Render costuma levar para ligar depois de dormir. */
-const EXPECTED_WAKE_SECONDS = 60;
+/** Quanto a API gratuita do Render costuma levar para ligar depois de dormir (de 1 min a 1 min e meio). */
+const EXPECTED_WAKE_SECONDS = 90;
 /** Se a API responder antes disso, ninguém precisa ver aviso nenhum. */
 const SHOW_AFTER_MS = 2500;
 

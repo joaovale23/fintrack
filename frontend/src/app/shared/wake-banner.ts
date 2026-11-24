@@ -33,9 +33,10 @@ import { AWAKE_HOURS, ServerStatus } from '../core/server-status';
             <span>
               @if (status.offHours()) {
                 Das {{ hours.from }}h às {{ hours.to }}h a API fica sempre pronta. Fora desse
-                horário ela dorme, por ser gratuita, e leva cerca de <b>1 minuto</b> para ligar.
+                horário ela dorme, por ser gratuita, e leva de
+                <b>1 minuto a 1 minuto e meio</b> para ligar.
               } @else {
-                Leva menos de 1 minuto.
+                Leva de 1 minuto a 1 minuto e meio.
               }
               Aguarde um instante: a página continua sozinha.
               @if (status.slow()) {
