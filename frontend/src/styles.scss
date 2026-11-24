@@ -105,6 +105,9 @@ html {
 *::before,
 *::after {
   box-sizing: border-box;
+  /* Sem o retângulo azul que o navegador do celular pinta em tudo que é tocado:
+     os botões já têm o próprio retorno visual (cor, escala, ripple). */
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
