@@ -17,6 +17,7 @@ import { RecurringDialog } from '../pages/recurring/recurring-dialog';
 import { GoalDialog } from '../pages/savings/goal-dialog';
 import { CategoryIcon } from './category-icon';
 import { SupportDialog } from './support-dialog';
+import { TourService } from '../core/tour.service';
 
 interface Item {
   id: string;
@@ -98,6 +99,7 @@ export class CommandPalette {
   private readonly categories = inject(CategoryStore);
   private readonly savings = inject(SavingsService);
   private readonly theme = inject(ThemeService);
+  private readonly tourService = inject(TourService);
   private readonly privacy = inject(PrivacyService);
   private readonly auth = inject(AuthService);
   private readonly field = viewChild<ElementRef<HTMLInputElement>>('field');
@@ -201,6 +203,14 @@ export class CommandPalette {
       label: 'Relatar problema',
       keywords: 'bug erro suporte ajuda contato ideia sugestão',
       run: () => this.dialog.open(SupportDialog, { backdropClass: 'soft-backdrop' }),
+    },
+    {
+      id: 'a-tour',
+      section: 'Conta',
+      icon: 'tour',
+      label: 'Rever o tour',
+      keywords: 'tutorial ajuda como usar onboarding guia',
+      run: () => this.tourService.start(),
     },
     { id: 'a-out', section: 'Conta', icon: 'logout', label: 'Sair', run: () => this.auth.logout() },
   ];

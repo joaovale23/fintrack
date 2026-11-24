@@ -5,7 +5,7 @@
       {{ monthName() }}<span class="year">{{ year() }}</span>
     </h1>
     <div class="hero-actions">
-      <app-month-switcher [(month)]="month" />
+      <app-month-switcher [(month)]="month" data-tour="month" />
       <!-- No celular vira só o play, na mesma linha do mês. Sem gastos ainda, o toque explica o que é. -->
       <div class="retro-wrap">
         <button
@@ -35,7 +35,7 @@
     </div>
   </div>
 
-  <div class="balance" [class.negative]="(data()?.balance ?? 0) < 0">
+  <div class="balance" data-tour="balance" [class.negative]="(data()?.balance ?? 0) < 0">
     <svg class="deco" viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 150 C 80 150, 110 60, 200 70 S 320 160, 400 40" />
       <path d="M0 175 C 90 170, 130 100, 210 105 S 330 185, 400 85" />
@@ -88,7 +88,7 @@
   </ul>
 }
 
-<section class="card block flow">
+<section class="card block flow" data-tour="flow">
   <header>
     <div>
       <h2>Para onde foi o dinheiro</h2>

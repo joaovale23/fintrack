@@ -69,6 +69,16 @@ export class AuthService {
     );
   }
 
+  /** Terminou (ou pulou) o tour da primeira entrada: a API guarda, para não repetir em outro aparelho. */
+  finishOnboarding(): void {
+    const session = this.session();
+    if (!session || session.user.onboarded !== false) return;
+    this.persist({ ...session, user: { ...session.user, onboarded: true } });
+    this.http
+      .put<User>(`${environment.apiUrl}/api/me/onboarding`, {})
+      .subscribe({ error: () => undefined });
+  }
+
   /** Busca o usuário de novo (avatar, admin): sessões antigas ficam em dia sem precisar sair e entrar. */
   refreshMe(): void {
     if (!this.token()) return;

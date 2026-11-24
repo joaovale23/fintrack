@@ -33,6 +33,10 @@ public class User {
     /** Um dos personagens do app (ver {@link Avatar}); nulo mostra as iniciais. */
     private String avatar;
 
+    /** Já passou pela primeira entrada (avatar e tour guiado). */
+    @Column(nullable = false)
+    private boolean onboarded;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 
@@ -52,6 +56,11 @@ public class User {
     public boolean isDemo() { return demo; }
     public Instant getCreatedAt() { return createdAt; }
     public String getAvatar() { return avatar; }
+    public boolean isOnboarded() { return onboarded; }
+
+    public void finishOnboarding() {
+        this.onboarded = true;
+    }
 
     public void changeAvatar(String avatar) {
         this.avatar = avatar;

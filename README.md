@@ -36,6 +36,8 @@ Front em **Angular 22** e API em **Java 21 + Spring Boot 4**, com PostgreSQL.
 - **Tema claro e escuro**, com a troca se abrindo em círculo a partir do clique; atalho `N` para novo lançamento;
   no celular, barra inferior e um botão flutuante que mostra "Lançar" no topo e encolhe para "+" ao rolar.
 - Conta própria (JWT, senha com BCrypt), **conta de visitante** em branco ou **exemplo preenchido** com seis meses de dados.
+- **Primeira entrada guiada:** a pessoa escolhe o personagem da foto de perfil e faz um tour com "holofote" que
+  explica o lançamento, os meses, o saldo, o fluxo, as abas e o modo discreto (versões para computador e celular).
 - **Relatar problema:** um botão em todas as telas manda o relato (com a página e o navegador) para o dono do app, por e-mail.
 - **Bastidores (admin):** painel com quantas pessoas usam o app por dia, os relatos e os erros que o site e a API
   registram sozinhos, agrupados por ocorrência. Só contagens: lançamentos e valores de ninguém aparecem ali.

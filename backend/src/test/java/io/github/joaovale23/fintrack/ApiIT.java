@@ -206,6 +206,14 @@ class ApiIT {
     }
 
     @Test
+    void primeiraEntradaApareceUmaVezSo() throws Exception {
+        String token = register("Jade", unique("jade"));
+        mvc.perform(auth(get("/api/me"), token)).andExpect(jsonPath("$.onboarded").value(false));
+        mvc.perform(auth(put("/api/me/onboarding"), token)).andExpect(jsonPath("$.onboarded").value(true));
+        mvc.perform(auth(get("/api/me"), token)).andExpect(jsonPath("$.onboarded").value(true));
+    }
+
+    @Test
     void frontConsegueConsultarSeAApiEstaAcordada() throws Exception {
         mvc.perform(get("/actuator/health/liveness").header("Origin", "http://localhost:4200"))
                 .andExpect(status().isOk())

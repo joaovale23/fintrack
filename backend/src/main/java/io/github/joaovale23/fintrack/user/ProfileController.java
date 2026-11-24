@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Dados do próprio usuário. Por enquanto, só a troca de avatar. */
+/** Dados do próprio usuário: avatar e a primeira entrada (onboarding). */
 @RestController
 @RequestMapping("/api/me")
 public class ProfileController {
@@ -47,6 +47,15 @@ public class ProfileController {
         }
         User user = find(jwt);
         user.changeAvatar(req.avatar());
+        return AuthResponse.UserInfo.from(user, admins.isAdmin(user));
+    }
+
+    /** A pessoa terminou (ou pulou) o tour da primeira entrada: não aparece de novo, em nenhum aparelho. */
+    @PutMapping("/onboarding")
+    @Transactional
+    AuthResponse.UserInfo finishOnboarding(@AuthenticationPrincipal Jwt jwt) {
+        User user = find(jwt);
+        user.finishOnboarding();
         return AuthResponse.UserInfo.from(user, admins.isAdmin(user));
     }
 

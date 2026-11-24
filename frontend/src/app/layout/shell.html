@@ -1,16 +1,16 @@
 <aside class="sidebar">
   <a routerLink="/" class="brand" aria-label="fintrack, ir para o painel"><app-logo /></a>
 
-  <button class="btn primary new" (click)="newTransaction()">
+  <button class="btn primary new" data-tour="new" (click)="newTransaction()">
     <span class="material-symbols-rounded">add</span> Novo lançamento <span class="kbd">N</span>
   </button>
 
-  <button class="search-trigger" (click)="openPalette()">
+  <button class="search-trigger" data-tour="search" (click)="openPalette()">
     <span class="material-symbols-rounded">search</span> Buscar
     <span class="kbd">{{ isMac ? '⌘' : 'Ctrl' }} K</span>
   </button>
 
-  <nav aria-label="Principal">
+  <nav aria-label="Principal" data-tour="nav">
     @for (link of links; track link.path) {
       <a
         [routerLink]="link.path"
@@ -31,7 +31,7 @@
   </nav>
 
   <div class="sidebar-foot">
-    <button class="help" (click)="openSupport()">
+    <button class="help" data-tour="help" (click)="openSupport()">
       <span class="material-symbols-rounded">support</span> Relatar problema
     </button>
     @if (user()?.demo) {
@@ -55,6 +55,7 @@
     <div class="tools">
       <button
         class="icon-button"
+        data-tour="privacy"
         (click)="privacy.toggle()"
         [class.on]="privacy.on()"
         [matTooltip]="(privacy.on() ? 'Mostrar valores' : 'Esconder valores') + ' (H)'"
@@ -75,6 +76,14 @@
           theme.theme() === 'dark' ? 'light_mode' : 'dark_mode'
         }}</span>
       </button>
+      <button
+        class="icon-button"
+        (click)="tour.start()"
+        matTooltip="Rever o tour"
+        aria-label="Rever o tour"
+      >
+        <span class="material-symbols-rounded">tour</span>
+      </button>
       <button class="icon-button" (click)="logout()" matTooltip="Sair" aria-label="Sair">
         <span class="material-symbols-rounded">logout</span>
       </button>
@@ -87,6 +96,7 @@
   <span class="spacer"></span>
   <button
     class="icon-button"
+    data-tour="privacy"
     (click)="privacy.toggle()"
     [class.on]="privacy.on()"
     [attr.aria-pressed]="privacy.on()"
@@ -105,7 +115,7 @@
       theme.theme() === 'dark' ? 'light_mode' : 'dark_mode'
     }}</span>
   </button>
-  <button class="avatar-button" [matMenuTriggerFor]="menu" aria-label="Conta">
+  <button class="avatar-button" data-tour="help" [matMenuTriggerFor]="menu" aria-label="Conta">
     <app-avatar [avatar]="user()?.avatar" [name]="user()?.name ?? ''" [size]="34" />
   </button>
   <mat-menu #menu="matMenu" xPosition="before">
@@ -118,6 +128,9 @@
     </button>
     <button mat-menu-item (click)="openSupport()">
       <span class="material-symbols-rounded menu-icon">support</span> Relatar problema
+    </button>
+    <button mat-menu-item (click)="tour.start()">
+      <span class="material-symbols-rounded menu-icon">tour</span> Rever o tour
     </button>
     @if (user()?.admin) {
       <a mat-menu-item routerLink="/admin">
@@ -136,6 +149,7 @@
 
 <button
   class="fab"
+  data-tour="new"
   [class.compact]="compactFab()"
   (click)="newTransaction()"
   aria-label="Novo lançamento"
@@ -144,7 +158,7 @@
   <span class="fab-label">Lançar</span>
 </button>
 
-<nav class="tabbar" aria-label="Principal">
+<nav class="tabbar" aria-label="Principal" data-tour="nav">
   @for (link of mobileLinks; track link.path) {
     <a
       [routerLink]="link.path"
@@ -157,3 +171,5 @@
     </a>
   }
 </nav>
+
+<app-tour (finished)="onTourFinished($event)" />

@@ -9,6 +9,8 @@ export interface User {
   avatar?: string | null;
   /** Vê o painel /admin (uso, relatos e erros). */
   admin?: boolean;
+  /** false só para quem ainda não passou pela primeira entrada (avatar e tour). */
+  onboarded?: boolean;
 }
 
 export interface AuthResponse {

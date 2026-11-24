@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal, untracked } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -11,6 +11,9 @@ import { CommandPalette } from '../shared/command-palette';
 import { Avatar } from '../shared/avatar';
 import { AvatarPicker } from '../shared/avatar-picker';
 import { SupportDialog } from '../shared/support-dialog';
+import { Tour } from '../shared/tour';
+import { WelcomeDialog } from '../shared/welcome-dialog';
+import { TourService } from '../core/tour.service';
 import { Logo } from '../shared/logo';
 
 /**
@@ -28,6 +31,7 @@ import { Logo } from '../shared/logo';
     MatTooltipModule,
     Logo,
     Avatar,
+    Tour,
   ],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
@@ -42,6 +46,8 @@ export class Shell {
   private readonly dialog = inject(MatDialog);
   protected readonly theme = inject(ThemeService);
   protected readonly privacy = inject(PrivacyService);
+  protected readonly tour = inject(TourService);
+  private welcomed = false;
   protected readonly user = this.auth.user;
   protected readonly compactFab = signal(false);
 
@@ -58,6 +64,26 @@ export class Shell {
   constructor() {
     // Traz o usuário atualizado (por exemplo, a marca de admin) sem precisar sair e entrar de novo.
     this.auth.refreshMe();
+    // Primeira entrada: escolha do avatar e, depois, o tour guiado. Só uma vez por conta.
+    effect(() => {
+      if (this.user()?.onboarded === false && !this.welcomed) {
+        this.welcomed = true;
+        untracked(() => setTimeout(() => this.welcome(), 600));
+      }
+    });
+  }
+
+  private welcome(): void {
+    this.dialog
+      .open(WelcomeDialog, { backdropClass: 'soft-backdrop', disableClose: true, autoFocus: false })
+      .afterClosed()
+      .subscribe(() => this.tour.start());
+  }
+
+  /** Fim do tour: não mostra de novo e, se a pessoa quiser, já abre o primeiro lançamento. */
+  protected onTourFinished(firstEntry: boolean): void {
+    this.auth.finishOnboarding();
+    if (firstEntry) this.newTransaction();
   }
 
   /** "Relatar problema": chega por e-mail ao dono do app. */
