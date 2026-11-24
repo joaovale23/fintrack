@@ -4,6 +4,7 @@ import localePt from '@angular/common/locales/pt';
 import {
   ApplicationConfig,
   DEFAULT_CURRENCY_CODE,
+  ErrorHandler,
   LOCALE_ID,
   inject,
   provideAppInitializer,
@@ -23,6 +24,7 @@ import {
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth.interceptor';
 import { PrivacyService } from './core/privacy.service';
+import { StaleBuildHandler } from './core/stale-build-handler';
 import { ThemeService } from './core/theme.service';
 
 registerLocaleData(localePt);
@@ -30,6 +32,8 @@ registerLocaleData(localePt);
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    // Aba aberta antes de um deploy: recarrega em vez de quebrar ao trocar de página.
+    { provide: ErrorHandler, useClass: StaleBuildHandler },
     provideRouter(
       routes,
       withComponentInputBinding(),
